@@ -70,7 +70,7 @@ sealed class Action {
 val loadListPersonSideEffect : SideEffect<State, Action> = {  // Side effect is just a type alias for a function
   actions : Observable<Action>,  state : StateAccessor<State> -> 
   actions
-    .ofType(LoadPersonsAction::class.java) // This side effect only runs for actions of type LoadPersonsAction
+    .ofType(LoadNextPageAction::class.java) // This side effect only runs for actions of type LoadPersonsAction
     .switchMap {
         // do network request
         val currentState : State  = state()
