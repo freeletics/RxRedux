@@ -1,7 +1,14 @@
 # RxRedux
-A Redux store implemtation entirely base on RxJava (inspired by (redux-observable)[https://redux-observable.js.org]) 
+A Redux store implemtation entirely base on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
 that helps to isolate side effects.
 
+## State of this repository
+Why is there no code in this repository?
+We haven't published the code yet. We wanted to share first how the API looks like to get Feedback early and not reinvent the wheel (and maybe combine forces if there are similar efforts going on).
+
+## How is this different from other Redux implementations like [Mobius](https://github.com/spotify/mobius)
+In contrast to any other Redux inspired library out there, this library is really backed on top of RxJava (Mobius just offers some extensions to use RxJava for async works). 
+This library offers a custom RxJava operator `.reduxStore( initialState, sideEffects, reducer )` and treats upstream events as `Actions`. 
 
 # Redux Store
 A Store is basically an observable container for state. 
