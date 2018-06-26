@@ -27,18 +27,80 @@ Every SideEffect can trigger multiple `Actions` (remember it returns `Observable
 Whenever a `SideEffect` needs to know the current State in its workflow, it can use `StateAccessor` to grab the latest state from Redux Store.
 
 # Usage
-``` kotlin
+Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen. Plus one can 
 
+``` kotlin
+data class State {
+  val currentPage : Int,
+  val persons : List<Person>, // The list of persons 
+  val loadingNextPage : Boolean,
+  val errorLoadingNextPage : Throwable?
+}
+
+val initialState = State(
+  currentPage = 0, 
+  persons = emptyList(), 
+  loadingNextPage = false, 
+  errorLoadingNextPage = null
+)
+```
+
+```kotlin
+sealed class Action {
+  sealed class UserAction : Action(){   // Actions triggered by the user
+    object LoadNextPageAction : UserAction()    // Action to load the first page
+  }
+  
+  sealed class SideEffectAction : Action() { // Actions triggered by a side effect
+    data class PageLoadedAction(val personsLoaded : List<Person>, val page : Int) : SideEffectAction() // Persons has been loaded
+    object StartedLoadingNextPageAction : SideEffectAction() // Started loading the list of persons
+    data class ErrorLoadingNextPageAction(val error : Throwable) : SideEffectAction() // An error occurred while loading
+  }
+}
+```
+
+```kotlin
 val loadListPersonSideEffect : SideEffect<State, Action> = {  // Side effect is just a type alias for a function
   actions : Observable<Action>,  state : StateAccessor<State> -> 
   // return Observable<Action>
   actions
-  .ofType(LoadPersonsAction::class.java)
-  .switchMap {
-     // do network request
+    .ofType(LoadPersonsAction::class.java) // This side effect only runs for actions of type LoadPersonsAction
+    .switchMap {
+        // do network request
+        val currentState : State  = state()
+        val nextPage = state.currentPage + 1
+        backend.getPersons(nextPage)
+          .map { persons : List<Person> -> PageLoadedAction(
+                      personsLoaded = persons, 
+                      page = nextPage
+                   ) 
+           }
+          .onErrorReturn { ErrorLoadingNextPageAction(it) }
+          .startWith(StartedLoadingNextPageAction)
+     }
   }
 }
+```
 
+```kotlin
+val reducer : Reducer<State, Action> = { // Reducer is just a typealias for a function (State, Action) -> State
+  state : State, action: Action ->
+  when(action) {
+    is StartedLoadingNextPageAction -> state.copy (loadingNextPage = true)
+    is ErrorLoadingNextPageAction -> state.copy( loadingNextPage = false, errorLoadingNextPage = action.error)
+    is PageLoadedAction -> state.copy(
+      loadingNextPage = false, 
+      errorLoadingNextPage = null
+      persons = state.persons + action.persons,
+      page = action.page
+    )
+    else -> state // Reducer is actually not handling this action (a sideeffect does most likely)
+  }
+}
+```
+
+
+```kotlin
 val actions : Observable<Action> = ...
 val sideEffects : List<SideEffect<State, Action> = listof(loadListPersonSideEffect, ...)
 
