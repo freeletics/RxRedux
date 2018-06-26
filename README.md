@@ -108,7 +108,7 @@ val reducer : Reducer<State, Action> = { // Reducer is just a typealias for a fu
 
 ```kotlin
 val actions : Observable<Action> = ...
-val sideEffects : List<SideEffect<State, Action> = listof(loadListPersonSideEffect, ...)
+val sideEffects : List<SideEffect<State, Action> = listof(loadListPersonSideEffect, ... )
 
 actions
   .reduxStore( initialState, sideEffects, reducer )
