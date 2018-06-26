@@ -69,7 +69,6 @@ sealed class Action {
 ```kotlin
 val loadListPersonSideEffect : SideEffect<State, Action> = {  // Side effect is just a type alias for a function
   actions : Observable<Action>,  state : StateAccessor<State> -> 
-  // return Observable<Action>
   actions
     .ofType(LoadPersonsAction::class.java) // This side effect only runs for actions of type LoadPersonsAction
     .switchMap {
