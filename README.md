@@ -31,7 +31,7 @@ You can think of a `SideEffect` as a use case in clean architecture: It should d
 Every SideEffect can trigger multiple `Actions` (remember it returns `Observable<Action>`) which go through the `Reducer` but can also trigger other `SideEffects` registered for the corresponding Action.
 
 # StateAccessor
-Whenever a `SideEffect` needs to know the current State in its workflow, it can use `StateAccessor` to grab the latest state from Redux Store.
+Whenever a `SideEffect` needs to know the current State it can use `StateAccessor` to grab the latest state from Redux Store. StateAccessor is basically just a function `() -> State` to grab the latest State anytime you need it.
 
 # Usage
 Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen. Plus one can 
