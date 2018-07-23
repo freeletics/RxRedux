@@ -168,7 +168,7 @@ data class PageLoadedAction(val personsLoaded : List<Person>, val page : Int)
 ![Step8](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step8.png)
 ![Step9](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step8.png)
 
-7. As any other Action `PageLoadedAction` goes through the `Reducer`. The Reducer processes this Action and computes a new state out of it by appending the loaded data to the already existing data.
+7. As any other Action `PageLoadedAction` goes through the `Reducer`. The Reducer processes this Action and computes a new state out of it by appending the loaded data to the already existing data (progress bar also is hidden).
 
 ![Step10](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step9.png)
 ![Step11](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step10.png)
