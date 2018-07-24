@@ -1,11 +1,28 @@
 package com.freeletics.rxredux
 
 import android.app.Application
+import android.view.ViewGroup
+import com.freeletics.rxredux.di.ApplicationModule
+import com.freeletics.rxredux.di.DaggerApplicationComponent
+import timber.log.Timber
 
-class SampleApplication : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
+open class SampleApplication : Application() {
+    init {
+        Timber.plant(Timber.DebugTree())
     }
 
+    val applicationComponent by lazy {
+        DaggerApplicationComponent.builder().apply {
+            componentBuilder(this)
+        }.build()
+    }
+
+    protected open fun componentBuilder(builder: DaggerApplicationComponent.Builder): DaggerApplicationComponent.Builder =
+        builder.applicationModule(
+            ApplicationModule(
+                mapOf<Class<*>, ViewBindingInstantiator>(
+                    MainActivity::class.java to { rootView: ViewGroup -> MainViewBinding(rootView) }
+                )
+            )
+        )
 }

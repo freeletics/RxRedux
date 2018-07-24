@@ -1,7 +1,8 @@
 package com.freeletics.rxredux.di
 
+import com.freeletics.rxredux.ViewBindingFactory
+import com.freeletics.rxredux.ViewBindingInstantiatorMap
 import com.freeletics.rxredux.businesslogic.github.GithubApi
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -10,18 +11,22 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
-object ApplicationModule {
+class ApplicationModule(private val viewBindingInstantiatorMap: ViewBindingInstantiatorMap) {
 
     @Provides
     @Singleton
-    fun provideGithubApi() : GithubApi {
+    fun provideGithubApi(): GithubApi {
 
         val retrofit =
             Retrofit.Builder().addConverterFactory(MoshiConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl("https://api.github.com")
                 .build()
 
         return retrofit.create(GithubApi::class.java)
-
     }
+
+    @Provides
+    @Singleton
+    fun provideViewBindingFactory() = ViewBindingFactory(viewBindingInstantiatorMap)
 }

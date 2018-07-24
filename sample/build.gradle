@@ -32,13 +32,22 @@ dependencies {
     implementation supportLibraries.appCompat
     implementation supportLibraries.recyclerView
     implementation supportLibraries.constraintLayout
+    implementation supportLibraries.design
+    implementation supportLibraries.viewModel
     implementation libraries.retrofit
     implementation libraries.retrofitRxJava
     implementation libraries.retrofitMoshi
+    implementation libraries.rxRelay
+    implementation libraries.rxJava
+    implementation libraries.rxAndroid
+    implementation libraries.timber
+    implementation libraries.rxBinding
+
     kapt libraries.moshiCodeGen
     implementation libraries.moshi
     implementation libraries.dagger
     kapt libraries.daggerCompiler
+    implementation project(':library')
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

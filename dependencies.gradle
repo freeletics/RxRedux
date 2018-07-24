@@ -3,7 +3,7 @@ ext.versions = [
         buildTools             : '27.0.3',
         compileSdk             : 28,
         targetSdk              : 28,
-        minSdk                 : 16,
+        minSdk                 : 21,
 
         dagger                 : '2.16',
         kotlin                 : '1.2.51',
@@ -16,8 +16,10 @@ ext.versions = [
 
         retrofit               : '2.4.0',
         moshi                  : '1.6.0',
+        viewModel              : '1.1.1',
+        timber                 : '4.7.1',
 
-        support                : '27.0.2',
+        support                : '27.1.0',
         supportConstraintLayout: '1.0.2',
 
         junit                  : '4.12',
@@ -31,10 +33,11 @@ ext.libraries = [
         kotlinStdlib          : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
         moshi                 : "com.squareup.moshi:moshi:$versions.moshi",
         moshiCodeGen          : "com.squareup.moshi:moshi-kotlin-codegen:$versions.moshi",
+        timber                : "com.jakewharton.timber:timber:$versions.timber",
 
         rxJava                : "io.reactivex.rxjava2:rxjava:$versions.rxJava",
         rxAndroid             : "io.reactivex.rxjava2:rxandroid:$versions.rxAndroid",
-        rxBinding             : "com.jakewharton.rxbinding2:rxbinding:$versions.rxBinding",
+        rxBinding             : "com.jakewharton.rxbinding2:rxbinding-kotlin:$versions.rxBinding",
         rxKotlin              : "io.reactivex.rxjava2:rxkotlin:$versions.rxKotlin",
         rxRelay               : "com.jakewharton.rxrelay2:rxrelay:$versions.rxRelay",
         rxReplayingShareKotlin: "com.jakewharton.rx2:replaying-share-kotlin:$versions.rxReplayingShare",
@@ -49,6 +52,8 @@ ext.supportLibraries = [
         appCompat       : "com.android.support:appcompat-v7:$versions.support",
         recyclerView    : "com.android.support:recyclerview-v7:$versions.support",
         constraintLayout: "com.android.support.constraint:constraint-layout:$versions.supportConstraintLayout",
+        design          : "com.android.support:design:$versions.support",
+        viewModel       : "android.arch.lifecycle:extensions:$versions.viewModel"
 ]
 
 ext.testLibraries = [
