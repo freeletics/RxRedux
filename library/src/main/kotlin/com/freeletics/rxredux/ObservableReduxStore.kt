@@ -87,6 +87,9 @@ private class ObservableReduxStore<S, A>(
         // Stream to cancel the subscriptions
         val actionsSubject = PublishSubject.create<A>()
 
+
+        actionsSubject.subscribe(storeObserver) // This will make the reducer run on each action
+
         sideEffects.forEach { sideEffect ->
             disposables += sideEffect(actionsSubject, storeObserver::currentState)
                 .subscribe({ action ->
@@ -94,18 +97,17 @@ private class ObservableReduxStore<S, A>(
                     actionsSubject.onNext(action)
 
                     // TODO how to get this run on the origin ReduxStore subscribeOn() Scheduler?
-                    // I don't think that this is possible to implement
+                    // I don't think that this is possible to implement. May need some scheduler
+                    // passed in as parameter similar to what Observable.timer() does.
 
                 }, { error ->
                     actionsSubject.onError(error)
                 }, {
                     // Swallow onComplete because just if one SideEffect reaches onComplete we don't want to make
-                    // everything incl. ReduxStore an other SideEffects reach onComplete
+                    // everything incl. ReduxStore and other SideEffects reach onComplete
                 }
                 )
         }
-
-        actionsSubject.subscribe(storeObserver) // This will make the reducer run on each action
 
         upstreamActionsObservable.subscribe(
             UpstreamObserver(

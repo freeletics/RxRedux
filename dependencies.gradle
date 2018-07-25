@@ -31,6 +31,7 @@ ext.libraries = [
         dagger                : "com.google.dagger:dagger:$versions.dagger",
         daggerCompiler        : "com.google.dagger:dagger-compiler:$versions.dagger",
         kotlinStdlib          : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+        kotlinReflect         : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
         moshi                 : "com.squareup.moshi:moshi:$versions.moshi",
         moshiCodeGen          : "com.squareup.moshi:moshi-kotlin-codegen:$versions.moshi",
         timber                : "com.jakewharton.timber:timber:$versions.timber",
@@ -44,7 +45,7 @@ ext.libraries = [
         koptionalRxJava2      : "com.gojuno.koptional:koptional-rxjava2-extensions:$versions.koptional",
         retrofit              : "com.squareup.retrofit2:retrofit:$versions.retrofit",
         retrofitMoshi         : "com.squareup.retrofit2:converter-moshi:$versions.retrofit",
-        retrofitRxJava        : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit"
+        retrofitRxJava        : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit",
 ]
 
 ext.supportLibraries = [
@@ -59,8 +60,6 @@ ext.supportLibraries = [
 ext.testLibraries = [
         junit        : "junit:junit:$versions.junit",
         kotlinMockito: "com.nhaarman:mockito-kotlin:$versions.kotlinMockito",
-        kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
-        assertJ      : "org.assertj:assertj-core:$versions.assertJ",
 ]
 
 ext.gradlePlugins = [

@@ -4,6 +4,8 @@ apply plugin: 'kotlin'
 dependencies {
     implementation libraries.kotlinStdlib
     implementation libraries.rxJava
+
+    testImplementation testLibraries.junit
 }
 
 sourceCompatibility = "1.7"

@@ -180,4 +180,116 @@ This system allows you to create a plugin in system of `SideEffects` that are hi
 
 ![Step12](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step13.png)
 
-Also `SideEffects` can be invoked by `Actions` from other `SideEffects`. 
+Also `SideEffects` can be invoked by `Actions` from other `SideEffects`.
+
+# FAQ
+
+### I get a `StackoverflowException`
+This is a common pitfall and is most of the time caused by the fact that an `SideEffect` emits an `Action` as output that it also consumes from upstream leading to a infinite loop.
+
+```kotlin
+val inputActions = Observable.just(1)
+
+val sideEffect: SideEffect<Int, Int> =
+            { actions, state -> actions.map{ it * 2} }
+
+inputActions
+    .reduxStore(
+        initialState = "InitialState",
+        sideEffects = listOf(sideEffect)
+    ) { state, action ->
+        ...
+    }
+```
+
+The problem is that from upstream we get `Int 1`.
+But since `sideeffect` reacts on that action `Int 1` too, it computes `1 * 2` and emits `2`, which then again gets handled by the same SideEffect ` 2 * 2 = 4` and emits `4`, which then again gets handled by the same SideEffect `4 * 2 = 8` and emits `8`, which then getst handled by the same SideEffect and so on (endless loop) ...
+
+### Who processes an `Action` from upstream first: `Reducer` or `SideEffect`?
+
+Since every Action runs through both `Reducer` and registered `SideEffects` this is a valid question.
+Technically speaking `Reducer` gets every `Action` from upstream before the registered `SideEffects`.
+The idea behind this is that a `Reducer` may change already the state before a `SideEffect` starts processing the action.
+
+For example lets assume upstream only emits exactly one action (because then it's simpler to illustrate the squence of workflow):
+
+```kotlin
+// 1. upstream emits events
+val upstreamActions = Observable.just( SomeAction() )
+
+val sideEffect1: SideEffect<Action, Action> = { actions, state ->
+    // 3. Runs because of SomeAction
+    actions.filter { it is SomeAction }.map { OtherAction() }
+}
+
+val sideEffect2: SideEffect<Action, Action> ={ actions, state ->
+    // 5. This runs second because of OtherAction
+    actions.filter { it is OtherAction }.map { YetAnotherAction() }
+}
+
+upstreamActions
+    .reduxStore(
+        initialState = ... ,
+        sideEffects = listOf(sideEffect)
+    ) { state, action ->
+        // 2. This runs first because of SomeAction
+        ...
+        // 4. This runs again because of OtherAction (emitted by SideEffect1)
+        ...
+        // 5. This runs again because of YetAnotherAction emitted from SideEffect2)
+    }.subscribe( ... )
+```
+
+So the workflow is as follows:
+1. Upstream emits `SomeAction`
+2. `reducer` processes `SomeAction`
+3. `SideEffect1` reacts on `SomeAction` and emits `OtherAction` as output
+4. `reducer` processes `OtherAction`
+5. `SideEffect2` reacts on `OtherAction` and emits `YetAnotherAction`
+6. `reducer` processes `YetAnotherAction`
+
+### Can I use `fun` for `SideEffects` or `Reducer`?
+
+Absolutely. `SideEffect` is just a type alias for a function `(actions: Observable<Action>, state: StateAccessor<State>) -> Observable<out Action>`.
+
+In kotlin you can use a lambda for that like this:
+```kotlin
+val sideEffect1: SideEffect<Action, Action> = { actions, state ->
+    actions.filter { it is SomeAction }.map { OtherAction() }
+}
+```
+
+of write a function (instead of a lambda):
+
+```kotlin
+fun sideEffect2(actions : Observable<Action>, state : StateAccessor<State>) : Observable<Action> {
+    return actions
+        .filter { it is SomeAction }.map { OtherAction() }
+}
+```
+
+Both are totally equal and can be used like that:
+
+```kotlin
+upstreamActions
+    .reduxStore(
+        initialState = ... ,
+        sideEffects = listOf(sideEffect1, ::sideEffect2)
+    ) { state, action ->
+        ...
+    }
+    .subscribe( ... )
+```
+
+The same thing is valid for Reducer. Reducer is just a type alias for a function `(State, Action) -> State`
+You can define your reducer as lambda or function:
+
+```kotlin
+val reducer = { state, action -> ... }
+
+// or
+
+fun reducer(state : State, action : Action) : State {
+  ...
+}
+```
