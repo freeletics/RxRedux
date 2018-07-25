@@ -44,6 +44,22 @@ fun <S, A> Observable<A>.reduxStore(
 }
 
 /**
+ * Just a convenience method to use varags for arbitarry many sideeffects instead a list of SideEffects.
+ * See [reduxStore] documentation.
+ *
+ * @see reduxStore
+ */
+fun <S, A> Observable<A>.reduxStore(
+    initialState: S,
+    vararg sideEffects: SideEffect<S, A>,
+    reducer: Reducer<S, A>
+): Observable<S> = reduxStore(
+    initialState = initialState,
+    sideEffects = sideEffects.toList(),
+    reducer = reducer
+)
+
+/**
  * Use [Observable.reduxStore] to create an instance of this kind of Observable.
  *
  * @param S The type of the State

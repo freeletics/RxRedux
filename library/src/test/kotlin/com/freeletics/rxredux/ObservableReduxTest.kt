@@ -1,8 +1,10 @@
 package com.freeletics.rxredux
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
+import org.junit.Assert
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 class ObservableReduxTest {
 
@@ -60,5 +62,63 @@ class ObservableReduxTest {
             .test()
             .assertValues("InitialState")
             .assertError(exception)
+    }
+
+    @Test
+    fun `disposing reduxStore disposes all side effects and upstream`() {
+        var disposedSideffectsCount = 0
+        val dummyAction = "SomeAction"
+        val upstream = PublishSubject.create<String>()
+        val outputedStates = ArrayList<String>()
+        var outputedError: Throwable? = null
+        var outputCompleted = false
+
+        val sideEffect1: SideEffect<String, String> = { actions, state ->
+            actions.filter { it == dummyAction }.map { "SideEffectAction1" }
+                .doOnDispose { disposedSideffectsCount++ }
+        }
+
+
+        val sideEffect2: SideEffect<String, String> = { actions, state ->
+            actions.filter { it == dummyAction }.map { "SideEffectAction2" }
+                .doOnDispose { disposedSideffectsCount++ }
+        }
+
+        val disposable = upstream
+            .reduxStore(
+                "InitialState", sideEffect1, sideEffect2
+            ) { state, action ->
+                action
+            }
+            .subscribeOn(Schedulers.io())
+            .subscribe(
+                { outputedStates.add(it) },
+                { outputedError = it },
+                { outputCompleted = true })
+
+        Thread.sleep(100)        // I know it's bad, but it does the job
+
+        // Trigger some action
+        upstream.onNext(dummyAction)
+
+        Thread.sleep(100)        // I know it's bad, but it does the job
+
+        // Dispose the whole cain
+        disposable.dispose()
+
+        // Verify everything is fine
+        Assert.assertEquals(2, disposedSideffectsCount)
+        Assert.assertFalse(upstream.hasObservers())
+        Assert.assertEquals(
+            listOf(
+                "InitialState",
+                dummyAction,
+                "SideEffectAction1",
+                "SideEffectAction2"
+            ),
+            outputedStates
+        )
+        Assert.assertNull(outputedError)
+        Assert.assertFalse(outputCompleted)
     }
 }
