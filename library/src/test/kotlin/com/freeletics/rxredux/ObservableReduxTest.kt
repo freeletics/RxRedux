@@ -2,6 +2,7 @@ package com.freeletics.rxredux
 
 import io.reactivex.Observable
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 class ObservableReduxTest {
 
@@ -31,10 +32,33 @@ class ObservableReduxTest {
                 "InputAction2SideEffect1",
                 "InputAction2SideEffect2"
             )
+            .assertComplete()
+            .assertNoErrors()
     }
 
     @Test
-    fun `once upstream of actions complete, reduxstore completes too`(){
+    fun `Empty upstream just emits initial state and completes`() {
+        val upstream: Observable<String> = Observable.empty()
+        upstream.reduxStore(
+            "InitialState",
+            sideEffects = emptyList()
+        ) { state, action -> state }
+            .test()
+            .assertNoErrors()
+            .assertValues("InitialState")
+            .assertComplete()
+    }
 
+    @Test
+    fun `Error upstream just emits initial state and run in onError`() {
+        val exception = Exception("FakeException")
+        val upstream: Observable<String> = Observable.error<String>(exception)
+        upstream.reduxStore(
+            "InitialState",
+            sideEffects = emptyList()
+        ) { state, action -> state }
+            .test()
+            .assertValues("InitialState")
+            .assertError(exception)
     }
 }
