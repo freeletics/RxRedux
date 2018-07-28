@@ -2,6 +2,7 @@ package com.freeletics.rxredux
 
 import android.content.Intent
 import android.support.test.rule.ActivityTestRule
+import android.support.test.rule.GrantPermissionRule
 import android.support.test.runner.AndroidJUnit4
 import com.freeletics.rxredux.businesslogic.github.GithubRepository
 import com.freeletics.rxredux.businesslogic.github.GithubSearchResults
@@ -56,6 +57,9 @@ private data class Given(
     private val composedMessage: String
 ) {
 
+
+    private val indent = "  "
+
     /**
      * All states that has been captured and asserted in an `on`cl
      */
@@ -70,7 +74,7 @@ private data class Given(
                 val states = stateRecorder.renderedStates()
                     .take(allCapturedStatesSoFar.size + 1L)
                     .toList()
-                    .timeout(10, TimeUnit.SECONDS)
+                    .timeout(1, TimeUnit.MINUTES)
                     .blockingGet()
 
                 val expectedStates = allCapturedStatesSoFar + expectedState
@@ -85,13 +89,13 @@ private data class Given(
         }
 
         fun it(message: String, expectedState: PaginationStateMachine.State) {
-            val it = It("$composedMessage\n\t\t$message")
+            val it = It("$composedMessage\n$indent$indent$message")
             it.renderedState(expectedState)
         }
     }
 
     fun on(message: String, block: On.() -> Unit) {
-        val on = On("- $composedMessage\n\t\t$message")
+        val on = On("\n- $composedMessage\n$indent$message")
         on.block()
     }
 }
@@ -142,7 +146,7 @@ private val githubSearchResultsAdapter = moshi.adapter(GithubSearchResults::clas
 
 fun MockWebServer.enqueue200(items: List<GithubRepository>) {
     // TODO why is loading resources not working?
-   // val body = MainActivityTest::class.java.getResource("response1.json").readText()
+    // val body = MainActivityTest::class.java.getResource("response1.json").readText()
 
     enqueue(
         MockResponse()
@@ -157,6 +161,8 @@ class MainActivityTest {
     @get:Rule
     val activityTestRule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val permission = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @Test
     fun runTests() {
@@ -178,11 +184,11 @@ class MainActivityTest {
         }
 
         override fun startScreen() {
-            val activity = activityRule.launchActivity(Intent())
+            activityRule.launchActivity(Intent())
         }
     }
 
-    class AndroidStateRecorder : StateRecorder {
+    inner class AndroidStateRecorder : StateRecorder {
 
         override fun renderedStates(): Observable<PaginationStateMachine.State> =
             RecordingMainViewBinding.INSTANCE.recordedStates

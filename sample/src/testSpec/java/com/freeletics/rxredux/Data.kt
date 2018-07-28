@@ -3,7 +3,7 @@ package com.freeletics.rxredux
 import com.freeletics.rxredux.businesslogic.github.GithubRepository
 
 val FIRST_PAGE: List<GithubRepository> by lazy {
-    val r = 1..10L
+    val r = 1..30L
 
     r.map { i ->
         GithubRepository(
@@ -15,7 +15,7 @@ val FIRST_PAGE: List<GithubRepository> by lazy {
 }
 
 val SECOND_PAGE: List<GithubRepository> by lazy {
-    val r = 11..20L
+    val r = 31..60L
 
     r.map { i ->
         GithubRepository(

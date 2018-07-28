@@ -2,12 +2,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+// apply plugin: 'com.facebook.testing.screenshot'
+apply plugin: 'shot'
 
 kapt {
     arguments {
         arg("moshi.generated", "javax.annotation.Generated")
     }
 }
+
+
+shot {
+    appId = 'com.freeletics.rxredux'
+}
+
 
 android {
     compileSdkVersion versions.compileSdk
@@ -77,5 +85,7 @@ dependencies {
     androidTestImplementation testLibraries.mockWebServer
     androidTestImplementation libraries.moshiKotlin
     androidTestImplementation libraries.moshi
+    androidTestImplementation 'com.facebook.testing.screenshot:layout-hierarchy-common:0.7.0'
+
 }
 
