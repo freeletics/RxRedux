@@ -20,7 +20,8 @@ open class SampleApplication : Application() {
     protected open fun componentBuilder(builder: DaggerApplicationComponent.Builder): DaggerApplicationComponent.Builder =
         builder.applicationModule(
             ApplicationModule(
-                mapOf<Class<*>, ViewBindingInstantiator>(
+                baseUrl = "https://api.github.com",
+                viewBindingInstantiatorMap = mapOf<Class<*>, ViewBindingInstantiator>(
                     MainActivity::class.java to { rootView: ViewGroup -> MainViewBinding(rootView) }
                 )
             )

@@ -17,13 +17,30 @@ android {
         minSdkVersion versions.minSdk
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.freeletics.rxredux.SampleAppRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+
+    sourceSets {
+        test {
+            java.srcDirs += ['src/testSpec/java']
+            resources.srcDirs += ['src/testSpec/resources']
+        }
+
+        androidTest {
+            java.srcDirs += ['src/testSpec/java']
+            resources.srcDirs += ['src/testSpec/resources']
+        }
+    }
+
+    testOptions {
+        animationsDisabled = true
     }
 }
 
@@ -42,6 +59,9 @@ dependencies {
     implementation libraries.rxAndroid
     implementation libraries.timber
     implementation libraries.rxBinding
+    implementation libraries.okhttp
+    implementation libraries.moshiKotlin
+    implementation libraries.moshi
 
     kapt libraries.moshiCodeGen
     implementation libraries.moshi
@@ -50,6 +70,12 @@ dependencies {
     implementation project(':library')
 
     testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation testLibraries.mockWebServer
+    androidTestImplementation libraries.moshiKotlin
+    androidTestImplementation libraries.moshi
 }
+
