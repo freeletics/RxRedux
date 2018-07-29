@@ -62,7 +62,8 @@ ext.supportLibraries = [
 
 ext.testLibraries = [
         junit        : "junit:junit:$versions.junit",
-        mockWebServer: "com.squareup.okhttp3:mockwebserver:$versions.okhttp"
+        mockWebServer: "com.squareup.okhttp3:mockwebserver:$versions.okhttp",
+        okhttpTls    : "com.squareup.okhttp3:okhttp-tls:$versions.okhttp"
 ]
 
 ext.gradlePlugins = [

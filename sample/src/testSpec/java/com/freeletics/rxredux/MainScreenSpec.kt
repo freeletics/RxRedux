@@ -4,6 +4,7 @@ import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.Observable
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
@@ -70,17 +71,19 @@ private data class Given(
                     states
                 )
                 allCapturedStatesSoFar = states
+                Timber.d("✅ $composedMessage")
+
             }
         }
 
         fun it(message: String, expectedState: PaginationStateMachine.State) {
-            val it = It("$composedMessage - $message")
+            val it = It("$composedMessage - it - $message")
             it.renderedState(expectedState)
         }
     }
 
     fun on(message: String, block: On.() -> Unit) {
-        val on = On(" - $composedMessage - $message")
+        val on = On("- given - $composedMessage - on - $message")
         on.block()
     }
 }
@@ -104,22 +107,26 @@ class MainScreenSpec(
     }
 
     fun runTests() {
-        given("The Main screen") {
+        given("the Main screen") {
             val server = config.mockWebServer
-            val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
+            val connectionErrorMessage = "Failed to connect to localhost/0:0:0:0:0:0:0:1:$MOCK_WEB_SERVER_PORT"
 
             on("device is offline") {
+                server.shutdown()
                 screen.loadFirstPage()
-                it("shows loading first", PaginationStateMachine.State.LoadingFirstPageState)
+                it("shows loading first page", PaginationStateMachine.State.LoadingFirstPageState)
                 it(
-                    "shows error",
+                    "shows error loading first page",
                     PaginationStateMachine.State.ErrorLoadingFirstPageState(connectionErrorMessage)
                 )
             }
 
             on("device is online again and user clicks retry loading first page") {
                 server.enqueue200(FIRST_PAGE)
+                Thread.sleep(1000)
                 server.start(MOCK_WEB_SERVER_PORT)
+                Thread.sleep(1000)
+
 
                 screen.retryLoadingFirstPage()
 

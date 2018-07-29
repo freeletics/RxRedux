@@ -31,7 +31,7 @@ class MainActivityTest {
         MainScreenSpec(
             screen = AndroidScreen(activityTestRule),
             stateRecorder = AndroidStateRecorder(),
-            config = MainScreenConfig(mockWebServer = MockWebServer())
+            config = MainScreenConfig(mockWebServer = MockWebServer().setupForHttps())
         ).runTests()
     }
 

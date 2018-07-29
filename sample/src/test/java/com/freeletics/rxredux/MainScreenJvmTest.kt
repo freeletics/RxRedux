@@ -1,9 +1,9 @@
 package com.freeletics.rxredux
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import com.freeletics.di.TestApplicationModule
 import com.freeletics.rxredux.businesslogic.pagination.Action
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import com.freeletics.rxredux.di.ApplicationModule
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
@@ -20,7 +20,8 @@ import timber.log.Timber
 class MainScreenJvmTest {
 
     class JvmScreen(
-        private val viewModel: MainViewModel) : Screen, StateRecorder {
+        private val viewModel: MainViewModel
+    ) : Screen, StateRecorder {
         val stateSubject = ReplaySubject.create<PaginationStateMachine.State>()
 
         override fun scrollTo(itemAtPosition: Int) {
@@ -61,8 +62,8 @@ class MainScreenJvmTest {
             }
         })
         val applicationComponent = DaggerTestComponent.builder().applicationModule(
-            ApplicationModule(
-                baseUrl = "http://127.0.0.1:$MOCK_WEB_SERVER_PORT",
+            TestApplicationModule(
+                baseUrl = "https://localhost:$MOCK_WEB_SERVER_PORT",
                 viewBindingInstantiatorMap = emptyMap(),
                 androidScheduler = Schedulers.trampoline()
             )
@@ -81,10 +82,14 @@ class MainScreenJvmTest {
             screen.stateSubject.onNext(it!!)
         }
 
-        MainScreenSpec(
-            config = MainScreenConfig(MockWebServer()),
-            screen = screen,
-            stateRecorder = screen
-        ).runTests()
+        val mockWebServer = MockWebServer()
+        mockWebServer.setupForHttps()
+        mockWebServer.use {
+            MainScreenSpec(
+                config = MainScreenConfig(it),
+                screen = screen,
+                stateRecorder = screen
+            ).runTests()
+        }
     }
 }

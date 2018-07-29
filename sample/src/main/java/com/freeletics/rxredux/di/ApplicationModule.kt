@@ -17,11 +17,12 @@ open class ApplicationModule(
     private val baseUrl: String,
     private val viewBindingInstantiatorMap: ViewBindingInstantiatorMap,
     private val androidScheduler: Scheduler
-) {
+    ) {
 
     @Provides
     @Singleton
-    open fun provideOkHttp() = OkHttpClient.Builder().build()
+    open fun provideOkHttp(): OkHttpClient =
+        OkHttpClient.Builder().build()
 
     @Provides
     @Singleton
