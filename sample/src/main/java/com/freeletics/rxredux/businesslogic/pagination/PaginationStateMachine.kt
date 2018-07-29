@@ -109,9 +109,9 @@ class PaginationStateMachine @Inject constructor(
         /**
          * An error while loading the first page has occurred
          */
-        data class ErrorLoadingFirstPageState(val error: Throwable) : State() {
+        data class ErrorLoadingFirstPageState(val errorMessage: String) : State() {
             override fun toString(): String =
-                "${ErrorLoadingFirstPageState::class.java.simpleName} error=${error.message}"
+                "${ErrorLoadingFirstPageState::class.java.simpleName} error=$errorMessage"
         }
 
         /**
@@ -161,7 +161,7 @@ class PaginationStateMachine @Inject constructor(
             /**
              * An error has occurred while loading the next page
              */
-            val error: Throwable,
+            val errorMessage: String,
 
             /**
              * The current Page
@@ -169,7 +169,7 @@ class PaginationStateMachine @Inject constructor(
             override val page: Int
         ) : State(), ContainsItems {
             override fun toString(): String =
-                "${ShowContentAndLoadNextPageErrorState::class.java.simpleName} error=${error.message} items=${items.size}"
+                "${ShowContentAndLoadNextPageErrorState::class.java.simpleName} error=$errorMessage items=${items.size}"
         }
     }
 
@@ -281,7 +281,7 @@ class PaginationStateMachine @Inject constructor(
 
             is ErrorLoadingPageAction -> if (action.page == 1) {
                 State.ErrorLoadingFirstPageState(
-                    action.error
+                    action.error.localizedMessage
                 )
             } else {
                 state
@@ -295,7 +295,7 @@ class PaginationStateMachine @Inject constructor(
                 State.ShowContentAndLoadNextPageErrorState(
                     items = state.items,
                     page = state.page,
-                    error = action.error
+                    errorMessage = action.error.localizedMessage
                 )
             }
 

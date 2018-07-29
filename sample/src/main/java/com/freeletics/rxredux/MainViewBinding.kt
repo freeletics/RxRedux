@@ -9,15 +9,16 @@ import com.freeletics.rxredux.businesslogic.github.GithubRepository
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.Observable
+import timber.log.Timber
 
 
 open class MainViewBinding(protected val rootView: ViewGroup) {
 
-    private val recyclerView: RecyclerView = rootView.findViewById(R.id.recyclerView)
-    private val adapter: MainAdapter = MainAdapter(LayoutInflater.from(rootView.context))
-    private val loading: View = rootView.findViewById(R.id.loading)
-    private val error: View = rootView.findViewById(R.id.error)
-    private var snackBar: Snackbar? = null
+    protected val recyclerView: RecyclerView = rootView.findViewById(R.id.recyclerView)
+    protected val adapter: MainAdapter = MainAdapter(LayoutInflater.from(rootView.context))
+    protected val loading: View = rootView.findViewById(R.id.loading)
+    protected val error: View = rootView.findViewById(R.id.error)
+    protected var snackBar: Snackbar? = null
 
     init {
         recyclerView.adapter = adapter
@@ -30,7 +31,9 @@ open class MainViewBinding(protected val rootView: ViewGroup) {
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!recyclerView!!.canScrollVertically(1)) {
+                val endReached = !recyclerView!!.canScrollVertically(1)
+                Timber.d("Scroll changed: $endReached")
+                if (endReached) {
                     emitter.onNext(Unit)
                 }
             }

@@ -6,6 +6,7 @@ import com.facebook.testing.screenshot.Screenshot
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.Observable
 import io.reactivex.subjects.ReplaySubject
+import timber.log.Timber
 import java.util.*
 
 
@@ -27,8 +28,8 @@ class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) 
     override fun render(state: PaginationStateMachine.State) {
         super.render(state)
         drawListener.queue.offer(state)
+        Timber.d("View should render $state")
     }
-
 
     inner class ScreenshotTakingDrawListener : ViewTreeObserver.OnDrawListener {
         val queue: Queue<PaginationStateMachine.State> = LinkedList()
@@ -37,6 +38,7 @@ class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) 
                 Screenshot.snap(rootView).setName("MainView State ${subject.values.size + 1}")
                     .record()
                 val state = queue.poll()
+                Timber.d("View is drawing --> dispatching $state")
                 subject.onNext(state)
             }
         }

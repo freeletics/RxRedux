@@ -9,17 +9,21 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.freeletics.rxredux.businesslogic.pagination.Action
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
+import com.freeletics.rxredux.di.AndroidScheduler
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    class MainViewModelFactory @Inject constructor(private val paginationStateMachine: PaginationStateMachine) :
-        ViewModelProvider.Factory {
+    class MainViewModelFactory @Inject constructor(
+        private val paginationStateMachine: PaginationStateMachine,
+        @AndroidScheduler private val scheduler: Scheduler
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            MainViewModel(paginationStateMachine) as T
+            MainViewModel(paginationStateMachine, scheduler) as T
     }
 
     @Inject

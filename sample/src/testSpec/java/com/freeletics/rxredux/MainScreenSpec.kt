@@ -1,21 +1,9 @@
 package com.freeletics.rxredux
 
-import android.content.Intent
-import android.support.test.rule.ActivityTestRule
-import android.support.test.rule.GrantPermissionRule
-import android.support.test.runner.AndroidJUnit4
-import com.freeletics.rxredux.businesslogic.github.GithubRepository
-import com.freeletics.rxredux.businesslogic.github.GithubSearchResults
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.reactivex.Observable
-import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
 
@@ -24,9 +12,9 @@ import java.util.concurrent.TimeUnit
  */
 interface Screen {
     /**
-     * Scroll to through the list of items until we reach the end of the screen
+     * Scroll the list to the item at position
      */
-    fun scrollToBottom()
+    fun scrollTo(itemAtPosition: Int)
 
     /**
      * Action on the screen: Clicks on the retry button to retry loading the first page
@@ -37,7 +25,7 @@ interface Screen {
      * Launches the screen.
      * After having this called, the screen is visible
      */
-    fun startScreen()
+    fun loadFirstPage()
 }
 
 /**
@@ -57,9 +45,6 @@ private data class Given(
     private val composedMessage: String
 ) {
 
-
-    private val indent = "  "
-
     /**
      * All states that has been captured and asserted in an `on`cl
      */
@@ -74,7 +59,7 @@ private data class Given(
                 val states = stateRecorder.renderedStates()
                     .take(allCapturedStatesSoFar.size + 1L)
                     .toList()
-                    .timeout(1, TimeUnit.MINUTES)
+                    .timeout(10, TimeUnit.SECONDS)
                     .blockingGet()
 
                 val expectedStates = allCapturedStatesSoFar + expectedState
@@ -89,13 +74,13 @@ private data class Given(
         }
 
         fun it(message: String, expectedState: PaginationStateMachine.State) {
-            val it = It("$composedMessage\n$indent$indent$message")
+            val it = It("$composedMessage - $message")
             it.renderedState(expectedState)
         }
     }
 
     fun on(message: String, block: On.() -> Unit) {
-        val on = On("\n- $composedMessage\n$indent$message")
+        val on = On(" - $composedMessage - $message")
         on.block()
     }
 }
@@ -121,12 +106,22 @@ class MainScreenSpec(
     fun runTests() {
         given("The Main screen") {
             val server = config.mockWebServer
-            server.enqueue200(FIRST_PAGE)
-            server.start(MOCK_WEB_SERVER_PORT)
+            val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
 
-            on("device is online and user starts the app") {
+            on("device is offline") {
+                screen.loadFirstPage()
+                it("shows loading first", PaginationStateMachine.State.LoadingFirstPageState)
+                it(
+                    "shows error",
+                    PaginationStateMachine.State.ErrorLoadingFirstPageState(connectionErrorMessage)
+                )
+            }
 
-                screen.startScreen()
+            on("device is online again and user clicks retry loading first page") {
+                server.enqueue200(FIRST_PAGE)
+                server.start(MOCK_WEB_SERVER_PORT)
+
+                screen.retryLoadingFirstPage()
 
                 it("shows loading", PaginationStateMachine.State.LoadingFirstPageState)
 
@@ -137,60 +132,57 @@ class MainScreenSpec(
                     )
                 )
             }
+
+            on("scrolling to the end of the first page") {
+                server.enqueue200(SECOND_PAGE)
+                screen.scrollTo(FIRST_PAGE.size - 1)
+
+                it(
+                    "shows loading next page",
+                    PaginationStateMachine.State.ShowContentAndLoadNextPageState(
+                        items = FIRST_PAGE,
+                        page = 1
+                    )
+                )
+
+                it(
+                    "shows next page content",
+                    PaginationStateMachine.State.ShowContentState(
+                        items = FIRST_PAGE + SECOND_PAGE,
+                        page = 2
+                    )
+                )
+            }
+
+            on("device is offline again and scrolling to end of second page") {
+                server.shutdown()
+                screen.scrollTo(FIRST_PAGE.size + SECOND_PAGE.size - 1)
+
+                it(
+                    "shows loading next page",
+                    PaginationStateMachine.State.ShowContentAndLoadNextPageState(
+                        items = FIRST_PAGE + SECOND_PAGE,
+                        page = 2
+                    )
+                )
+
+                it(
+                    "shows error info for few seconds on top of the list of items",
+                    PaginationStateMachine.State.ShowContentAndLoadNextPageErrorState(
+                        items = FIRST_PAGE + SECOND_PAGE,
+                        page = 2,
+                        errorMessage = connectionErrorMessage
+                    )
+                )
+
+                it(
+                    "hides error information and shows items only",
+                    PaginationStateMachine.State.ShowContentState(
+                        items = FIRST_PAGE + SECOND_PAGE,
+                        page = 2
+                    )
+                )
+            }
         }
-    }
-}
-
-private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-private val githubSearchResultsAdapter = moshi.adapter(GithubSearchResults::class.java)
-
-fun MockWebServer.enqueue200(items: List<GithubRepository>) {
-    // TODO why is loading resources not working?
-    // val body = MainActivityTest::class.java.getResource("response1.json").readText()
-
-    enqueue(
-        MockResponse()
-            .setBody(githubSearchResultsAdapter.toJson(GithubSearchResults(items)))
-    )
-}
-
-
-@RunWith(AndroidJUnit4::class)
-class MainActivityTest {
-
-    @get:Rule
-    val activityTestRule = ActivityTestRule(MainActivity::class.java, false, false)
-
-    @get:Rule
-    val permission = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-    @Test
-    fun runTests() {
-        // Setup test environment
-        MainScreenSpec(
-            screen = AndroidScreen(activityTestRule),
-            stateRecorder = AndroidStateRecorder(),
-            config = MainScreenConfig(mockWebServer = MockWebServer())
-        ).runTests()
-    }
-
-    class AndroidScreen(
-        private val activityRule: ActivityTestRule<MainActivity>
-    ) : Screen {
-        override fun scrollToBottom() {
-        }
-
-        override fun retryLoadingFirstPage() {
-        }
-
-        override fun startScreen() {
-            activityRule.launchActivity(Intent())
-        }
-    }
-
-    inner class AndroidStateRecorder : StateRecorder {
-
-        override fun renderedStates(): Observable<PaginationStateMachine.State> =
-            RecordingMainViewBinding.INSTANCE.recordedStates
     }
 }

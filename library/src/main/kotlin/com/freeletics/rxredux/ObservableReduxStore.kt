@@ -161,9 +161,9 @@ private class ObservableReduxStore<S, A>(
         }
 
         @Synchronized
-        override fun onNextActually(action: A) {
+        override fun onNextActually(t: A) {
             val currentState = currentState()
-            val newState = reducer(currentState, action)
+            val newState = reducer(currentState, t)
             state = newState
             actualObserver.onNext(newState)
         }

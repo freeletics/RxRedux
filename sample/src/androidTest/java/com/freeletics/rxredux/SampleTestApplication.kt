@@ -3,8 +3,7 @@ package com.freeletics.rxredux
 import android.view.ViewGroup
 import com.freeletics.rxredux.di.ApplicationModule
 import com.freeletics.rxredux.di.DaggerApplicationComponent
-
-const val MOCK_WEB_SERVER_PORT = 56543
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class SampleTestApplication : SampleApplication() {
 
@@ -12,8 +11,13 @@ class SampleTestApplication : SampleApplication() {
         builder.applicationModule(
             ApplicationModule(
                 baseUrl = "http://127.0.0.1:$MOCK_WEB_SERVER_PORT",
+                androidScheduler = AndroidSchedulers.mainThread(),
                 viewBindingInstantiatorMap = mapOf<Class<*>, ViewBindingInstantiator>(
-                    MainActivity::class.java to { rootView: ViewGroup -> RecordingMainViewBinding(rootView) }
+                    MainActivity::class.java to { rootView: ViewGroup ->
+                        RecordingMainViewBinding(
+                            rootView
+                        )
+                    }
                 )
             )
         )

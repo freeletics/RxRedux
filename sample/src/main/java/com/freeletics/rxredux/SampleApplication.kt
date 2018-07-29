@@ -4,6 +4,7 @@ import android.app.Application
 import android.view.ViewGroup
 import com.freeletics.rxredux.di.ApplicationModule
 import com.freeletics.rxredux.di.DaggerApplicationComponent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 open class SampleApplication : Application() {
@@ -21,8 +22,14 @@ open class SampleApplication : Application() {
         builder.applicationModule(
             ApplicationModule(
                 baseUrl = "https://api.github.com",
-                viewBindingInstantiatorMap = mapOf<Class<*>, ViewBindingInstantiator>(
-                    MainActivity::class.java to { rootView: ViewGroup -> MainViewBinding(rootView) }
+                androidScheduler = AndroidSchedulers.mainThread(),
+                viewBindingInstantiatorMap = mapOf<Class<*>,
+                        ViewBindingInstantiator>(
+                    MainActivity::class.java to { rootView: ViewGroup ->
+                        MainViewBinding(
+                            rootView
+                        )
+                    }
                 )
             )
         )

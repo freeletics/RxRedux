@@ -5,6 +5,7 @@ import com.freeletics.rxredux.ViewBindingInstantiatorMap
 import com.freeletics.rxredux.businesslogic.github.GithubApi
 import dagger.Module
 import dagger.Provides
+import io.reactivex.Scheduler
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -12,16 +13,23 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule(
+open class ApplicationModule(
     private val baseUrl: String,
-    private val viewBindingInstantiatorMap: ViewBindingInstantiatorMap
+    private val viewBindingInstantiatorMap: ViewBindingInstantiatorMap,
+    private val androidScheduler: Scheduler
 ) {
 
     @Provides
     @Singleton
-    fun provideGithubApi(): GithubApi {
+    open fun provideOkHttp() = OkHttpClient.Builder().build()
+
+    @Provides
+    @Singleton
+    open fun provideGithubApi(okHttp: OkHttpClient): GithubApi {
         val retrofit =
-            Retrofit.Builder().addConverterFactory(MoshiConverterFactory.create())
+            Retrofit.Builder()
+                .client(okHttp)
+                .addConverterFactory(MoshiConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(baseUrl)
                 .build()
@@ -32,4 +40,9 @@ class ApplicationModule(
     @Provides
     @Singleton
     fun provideViewBindingFactory() = ViewBindingFactory(viewBindingInstantiatorMap)
+
+    @Provides
+    @Singleton
+    @AndroidScheduler
+    fun androidScheduler() = androidScheduler
 }

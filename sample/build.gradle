@@ -13,7 +13,7 @@ kapt {
 
 
 shot {
-    appId = 'com.freeletics.rxredux'
+    appId = 'com.freeletics.rxredux.debug'
 }
 
 
@@ -78,14 +78,18 @@ dependencies {
     implementation project(':library')
 
     testImplementation 'junit:junit:4.12'
+    testImplementation "android.arch.core:core-testing:1.1.1"
+    testImplementation testLibraries.mockWebServer
+    testImplementation libraries.moshiKotlin
+    testImplementation libraries.moshi
+
+    kaptTest libraries.daggerCompiler
     androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation testLibraries.mockWebServer
     androidTestImplementation libraries.moshiKotlin
     androidTestImplementation libraries.moshi
-    androidTestImplementation 'com.facebook.testing.screenshot:layout-hierarchy-common:0.7.0'
-
 }
-
