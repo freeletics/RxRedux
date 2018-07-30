@@ -5,8 +5,8 @@ It users github api endpoint to query popular repositories.
 Github doesn't give us the whole list of repositories in one single response but offers pagination
 to load the next page once you hit the end of the list and need more repositories to display.
 
-![First page]()
-![Second page]()
+![First page](https://github.com/freeletics/RxRedux/blob/master/sample/.readme-images/screen1.png?raw=true)
+![Second page](https://github.com/freeletics/RxRedux/blob/master/sample/.readme-images/screen2.png?raw=true)
 
 To implement that of course we use `RxRedux`. The User can trigger `LoadFirstPageAction` and
 `LoadNextPageAction`.
