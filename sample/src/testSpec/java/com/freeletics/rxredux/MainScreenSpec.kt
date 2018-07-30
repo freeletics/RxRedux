@@ -109,7 +109,7 @@ class MainScreenSpec(
     fun runTests() {
         given("the Main screen") {
             val server = config.mockWebServer
-            val connectionErrorMessage = "Failed to connect to localhost/0:0:0:0:0:0:0:1:$MOCK_WEB_SERVER_PORT"
+            val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
 
             on("device is offline") {
                 server.shutdown()

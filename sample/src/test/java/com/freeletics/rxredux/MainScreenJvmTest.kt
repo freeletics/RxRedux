@@ -63,7 +63,7 @@ class MainScreenJvmTest {
         })
         val applicationComponent = DaggerTestComponent.builder().applicationModule(
             TestApplicationModule(
-                baseUrl = "https://localhost:$MOCK_WEB_SERVER_PORT",
+                baseUrl = "http://127.0.0.1:$MOCK_WEB_SERVER_PORT",
                 viewBindingInstantiatorMap = emptyMap(),
                 androidScheduler = Schedulers.trampoline()
             )

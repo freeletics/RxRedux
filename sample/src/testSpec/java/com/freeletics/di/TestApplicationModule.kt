@@ -2,10 +2,8 @@ package com.freeletics.di
 
 import com.freeletics.rxredux.ViewBindingInstantiatorMap
 import com.freeletics.rxredux.di.ApplicationModule
-import com.freeletics.rxredux.localhostCertificate
 import io.reactivex.Scheduler
 import okhttp3.OkHttpClient
-import okhttp3.tls.HandshakeCertificates
 import java.util.concurrent.TimeUnit
 
 
@@ -25,6 +23,8 @@ class TestApplicationModule(
             .readTimeout(5, TimeUnit.SECONDS)
             .connectTimeout(5, TimeUnit.SECONDS)
             .also {
+                // TODO https://github.com/square/okhttp/issues/4183
+                /*
                 val clientCertificates = HandshakeCertificates.Builder()
                     .addTrustedCertificate(localhostCertificate.certificate())
                     .build()
@@ -33,7 +33,7 @@ class TestApplicationModule(
                     clientCertificates.sslSocketFactory(),
                     clientCertificates.trustManager()
                 )
-
+                */
             }
             .build()
 

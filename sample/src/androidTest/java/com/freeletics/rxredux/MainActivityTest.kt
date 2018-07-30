@@ -15,6 +15,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import timber.log.Timber
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -39,15 +40,14 @@ class MainActivityTest {
         private val activityRule: ActivityTestRule<MainActivity>
     ) : Screen {
         override fun scrollTo(itemAtPosition: Int) {
-            activityRule.activity.runOnUiThread {
-                Espresso
-                    .onView(ViewMatchers.withId(R.id.recyclerView))
-                    .perform(
-                        RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                            itemAtPosition
-                        )
+            Timber.d("Scroll to $itemAtPosition")
+            Espresso
+                .onView(ViewMatchers.withId(R.id.recyclerView))
+                .perform(
+                    RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                        10
                     )
-            }
+                )
         }
 
         override fun retryLoadingFirstPage() {

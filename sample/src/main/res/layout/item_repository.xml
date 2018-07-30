@@ -15,7 +15,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="8dp"
-        android:text="TextView"
+        tools:text="TextView"
         app:layout_constraintEnd_toStartOf="@+id/starCount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,7 +29,7 @@
         android:drawableLeft="@drawable/ic_star_black_24dp"
         android:drawablePadding="8dp"
         android:minWidth="60dp"
-        android:text="200"
+        tools:text="200"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent" />
 </android.support.constraint.ConstraintLayout>

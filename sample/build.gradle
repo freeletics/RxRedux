@@ -21,7 +21,7 @@ android {
     compileSdkVersion versions.compileSdk
     defaultConfig {
         applicationId "com.freeletics.rxredux"
-        targetSdkVersion versions.targetSdk
+        targetSdkVersion 26
         minSdkVersion versions.minSdk
         versionCode 1
         versionName "1.0"
@@ -50,6 +50,10 @@ android {
     testOptions {
         animationsDisabled = true
     }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning','InvalidPackage'
+    }
 }
 
 dependencies {
@@ -76,13 +80,11 @@ dependencies {
     implementation libraries.dagger
     kapt libraries.daggerCompiler
     implementation project(':library')
-    implementation (testLibraries.okhttpTls){
-        exclude group: 'org.bouncycastle'
-    }
+    implementation testLibraries.okhttpTls
     //implementation "org.bouncycastle:bcprov-jdk15on:1.50"
     //implementation "org.bouncycastle:bcprov-ext-jdk15on:1.50"
     // implementation "org.bouncycastle:bcpkix-jdk15on:1.50"
-    implementation "org.bouncycastle:bctls-jdk15on:1.60"
+  //  implementation "org.bouncycastle:bctls-jdk15on:1.60"
 
     testImplementation 'junit:junit:4.12'
     testImplementation "android.arch.core:core-testing:1.1.1"
