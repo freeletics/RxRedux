@@ -20,14 +20,13 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import timber.log.Timber
 
 
 @RunWith(AndroidJUnit4::class)
-class MainActivityTest {
+class PopularRepositoriesActivityTest {
 
     @get:Rule
-    val activityTestRule = ActivityTestRule(MainActivity::class.java, false, false)
+    val activityTestRule = ActivityTestRule(PopularRepositoriesActivity::class.java, false, false)
 
     @get:Rule
     val permission = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -35,22 +34,22 @@ class MainActivityTest {
     @Test
     fun runTests() {
         // Setup test environment
-        MainScreenSpec(
+        PopularRepositoriesSpec(
             screen = AndroidScreen(activityTestRule),
             stateRecorder = AndroidStateRecorder(),
-            config = MainScreenConfig(mockWebServer = MockWebServer().setupForHttps())
+            config = ScreenConfig(mockWebServer = MockWebServer().setupForHttps())
         ).runTests()
     }
 
     class AndroidScreen(
-        private val activityRule: ActivityTestRule<MainActivity>
+        private val activityRule: ActivityTestRule<PopularRepositoriesActivity>
     ) : Screen {
         override fun scrollToEndOfList() {
             Espresso
                 .onView(ViewMatchers.withId(R.id.recyclerView))
                 .perform(
                     RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                        RecordingMainViewBinding.INSTANCE.lastPositionInAdapter() - 1
+                        RecordingPopularRepositoriesViewBinding.INSTANCE.lastPositionInAdapter() - 1
                     )
                 )
 
@@ -79,6 +78,6 @@ class MainActivityTest {
 
     inner class AndroidStateRecorder : StateRecorder {
         override fun renderedStates(): Observable<PaginationStateMachine.State> =
-            RecordingMainViewBinding.INSTANCE.recordedStates
+            RecordingPopularRepositoriesViewBinding.INSTANCE.recordedStates
     }
 }

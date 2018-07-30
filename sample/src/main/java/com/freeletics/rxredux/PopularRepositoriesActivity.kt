@@ -16,14 +16,14 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity() {
+class PopularRepositoriesActivity : AppCompatActivity() {
 
     class MainViewModelFactory @Inject constructor(
         private val paginationStateMachine: PaginationStateMachine,
         @AndroidScheduler private val scheduler: Scheduler
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            MainViewModel(paginationStateMachine, scheduler) as T
+            PopularRepositoriesViewModel(paginationStateMachine, scheduler) as T
     }
 
     @Inject
@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewBindingFactory: ViewBindingFactory
 
     private val viewBinding by lazy {
-        viewBindingFactory.create<MainViewBinding>(
-            MainActivity::class.java,
+        viewBindingFactory.create<PopularRepositoriesViewBinding>(
+            PopularRepositoriesActivity::class.java,
             rootView
         )
     }
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         applicationComponent.inject(this)
 
-        val viewModel = ViewModelProviders.of(this, viewModelFactory)[MainViewModel::class.java]
+        val viewModel = ViewModelProviders.of(this, viewModelFactory)[PopularRepositoriesViewModel::class.java]
         viewModel.state.observe(this, Observer {
             viewBinding.render(it!!)
         })

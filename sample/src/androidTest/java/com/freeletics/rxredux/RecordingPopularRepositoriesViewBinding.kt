@@ -1,8 +1,6 @@
 package com.freeletics.rxredux
 
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.widget.Adapter
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -10,9 +8,9 @@ import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
 
 
-class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) {
+class RecordingPopularRepositoriesViewBinding(rootView: ViewGroup) : PopularRepositoriesViewBinding(rootView) {
     companion object {
-        lateinit var INSTANCE: RecordingMainViewBinding
+        lateinit var INSTANCE: RecordingPopularRepositoriesViewBinding
     }
 
     private val subject = ReplaySubject.create<PaginationStateMachine.State>()

@@ -25,8 +25,8 @@ open class SampleApplication : Application() {
                 androidScheduler = AndroidSchedulers.mainThread(),
                 viewBindingInstantiatorMap = mapOf<Class<*>,
                         ViewBindingInstantiator>(
-                    MainActivity::class.java to { rootView: ViewGroup ->
-                        MainViewBinding(
+                    PopularRepositoriesActivity::class.java to { rootView: ViewGroup ->
+                        PopularRepositoriesViewBinding(
                             rootView
                         )
                     }

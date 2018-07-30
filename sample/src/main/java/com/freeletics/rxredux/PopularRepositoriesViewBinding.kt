@@ -13,7 +13,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
-open class MainViewBinding(protected val rootView: ViewGroup) {
+open class PopularRepositoriesViewBinding(protected val rootView: ViewGroup) {
 
     protected val recyclerView: RecyclerView = rootView.findViewById(R.id.recyclerView)
     protected val adapter: MainAdapter = MainAdapter(LayoutInflater.from(rootView.context))

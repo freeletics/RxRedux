@@ -18,10 +18,10 @@ import timber.log.Timber
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class MainScreenJvmTest {
+class PopularRepositoriesJvmTest {
 
     class JvmScreen(
-        private val viewModel: MainViewModel
+        private val viewModel: PopularRepositoriesViewModel
     ) : Screen, StateRecorder {
         val stateSubject: Subject<PaginationStateMachine.State> = ReplaySubject.create()
 
@@ -65,7 +65,7 @@ class MainScreenJvmTest {
         val paginationStateMachine = applicationComponent
             .paginationStateMachine()
 
-        val viewModel = MainViewModel(paginationStateMachine, Schedulers.trampoline())
+        val viewModel = PopularRepositoriesViewModel(paginationStateMachine, Schedulers.trampoline())
         val screen = JvmScreen(viewModel)
         viewModel.state.observeForever {
             screen.stateSubject.onNext(it!!)
@@ -74,8 +74,8 @@ class MainScreenJvmTest {
         val mockWebServer = MockWebServer()
         mockWebServer.setupForHttps()
         mockWebServer.use {
-            MainScreenSpec(
-                config = MainScreenConfig(it),
+            PopularRepositoriesSpec(
+                config = ScreenConfig(it),
                 screen = screen,
                 stateRecorder = screen
             ).runTests()

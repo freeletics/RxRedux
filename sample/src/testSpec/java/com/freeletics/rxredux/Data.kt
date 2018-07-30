@@ -9,7 +9,7 @@ val FIRST_PAGE: List<GithubRepository> by lazy {
         GithubRepository(
             id = i,
             name = "Repo$i",
-            stars = 100
+            stars = 100 - i
         )
     }
 }
@@ -21,7 +21,7 @@ val SECOND_PAGE: List<GithubRepository> by lazy {
         GithubRepository(
             id = i,
             name = "Repo$i",
-            stars = 100
+            stars = 100 - i
         )
     }
 }

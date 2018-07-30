@@ -77,13 +77,13 @@ private data class Given(
         }
 
         fun it(message: String, expectedState: PaginationStateMachine.State) {
-            val it = It("$composedMessage - it - $message")
+            val it = It("$composedMessage *IT* $message")
             it.renderedState(expectedState)
         }
     }
 
     fun on(message: String, block: On.() -> Unit) {
-        val on = On("- given - $composedMessage - on - $message")
+        val on = On("*GIVEN* $composedMessage *ON* $message")
         on.block()
     }
 }
@@ -91,14 +91,14 @@ private data class Given(
 /**
  * A simple holder object for all required configuration
  */
-data class MainScreenConfig(
+data class ScreenConfig(
     val mockWebServer: MockWebServer
 )
 
-class MainScreenSpec(
+class PopularRepositoriesSpec(
     private val screen: Screen,
     private val stateRecorder: StateRecorder,
-    private val config: MainScreenConfig
+    private val config: ScreenConfig
 ) {
 
     private fun given(message: String, block: Given.() -> Unit) {
@@ -107,11 +107,13 @@ class MainScreenSpec(
     }
 
     fun runTests() {
-        given("the Main screen") {
+        given("the Repositories List Screen") {
+
             val server = config.mockWebServer
             val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
 
             on("device is offline") {
+
                 server.shutdown()
                 screen.loadFirstPage()
                 it("shows loading first page", PaginationStateMachine.State.LoadingFirstPageState)
@@ -122,9 +124,9 @@ class MainScreenSpec(
             }
 
             on("device is online again and user clicks retry loading first page") {
+
                 server.enqueue200(FIRST_PAGE)
                 server.start(MOCK_WEB_SERVER_PORT)
-
 
                 screen.retryLoadingFirstPage()
 
@@ -139,6 +141,7 @@ class MainScreenSpec(
             }
 
             on("scrolling to the end of the first page") {
+
                 server.enqueue200(SECOND_PAGE)
                 screen.scrollToEndOfList()
 
@@ -160,6 +163,7 @@ class MainScreenSpec(
             }
 
             on("device is offline again and scrolling to end of second page") {
+
                 server.shutdown()
                 screen.scrollToEndOfList()
 

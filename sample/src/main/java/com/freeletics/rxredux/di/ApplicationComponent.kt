@@ -1,6 +1,6 @@
 package com.freeletics.rxredux.di
 
-import com.freeletics.rxredux.MainActivity
+import com.freeletics.rxredux.PopularRepositoriesActivity
 import dagger.Component
 import javax.inject.Singleton
 
@@ -8,5 +8,5 @@ import javax.inject.Singleton
 @Component(modules =[ApplicationModule::class] )
 interface ApplicationComponent {
 
-    fun inject(into: MainActivity)
+    fun inject(into: PopularRepositoriesActivity)
 }
