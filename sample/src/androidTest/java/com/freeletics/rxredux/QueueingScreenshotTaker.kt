@@ -82,7 +82,7 @@ class QueueingScreenshotTaker(
             if (context is Activity) {
                 return context
             }
-            context = (context as ContextWrapper).baseContext
+            context = context.baseContext
         }
 
         throw RuntimeException("Could not find parent Activity for $this")
