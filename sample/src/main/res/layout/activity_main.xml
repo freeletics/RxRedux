@@ -11,8 +11,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        />
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -34,15 +33,13 @@
         android:id="@+id/error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawablePadding="12dp"
         android:drawableTop="@drawable/ic_warning"
+        android:gravity="center"
+        android:text="@string/unexpected_error_retry"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:drawablePadding="12dp"
-        android:text="@string/unexpected_error_retry"
-        android:gravity="center"
-        android:background="@android:color/transparent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

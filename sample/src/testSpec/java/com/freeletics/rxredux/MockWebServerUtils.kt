@@ -28,6 +28,7 @@ fun MockWebServer.enqueue200(items: List<GithubRepository>) {
         MockResponse()
             .setBody(githubSearchResultsAdapter.toJson(GithubSearchResults(items)))
     )
+    Thread.sleep(200)
 }
 
 fun MockWebServer.setupForHttps(): MockWebServer {

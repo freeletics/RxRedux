@@ -15,7 +15,7 @@ interface Screen {
     /**
      * Scroll the list to the item at position
      */
-    fun scrollTo(itemAtPosition: Int)
+    fun scrollToEndOfList()
 
     /**
      * Action on the screen: Clicks on the retry button to retry loading the first page
@@ -123,9 +123,7 @@ class MainScreenSpec(
 
             on("device is online again and user clicks retry loading first page") {
                 server.enqueue200(FIRST_PAGE)
-                Thread.sleep(1000)
                 server.start(MOCK_WEB_SERVER_PORT)
-                Thread.sleep(1000)
 
 
                 screen.retryLoadingFirstPage()
@@ -142,7 +140,7 @@ class MainScreenSpec(
 
             on("scrolling to the end of the first page") {
                 server.enqueue200(SECOND_PAGE)
-                screen.scrollTo(FIRST_PAGE.size - 1)
+                screen.scrollToEndOfList()
 
                 it(
                     "shows loading next page",
@@ -163,7 +161,7 @@ class MainScreenSpec(
 
             on("device is offline again and scrolling to end of second page") {
                 server.shutdown()
-                screen.scrollTo(FIRST_PAGE.size + SECOND_PAGE.size - 1)
+                screen.scrollToEndOfList()
 
                 it(
                     "shows loading next page",

@@ -2,6 +2,7 @@ package com.freeletics.rxredux
 
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.widget.Adapter
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -14,9 +15,6 @@ class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) 
         lateinit var INSTANCE: RecordingMainViewBinding
     }
 
-    ///val drawListener = ScreenshotTakingDrawListener()
-
-
     private val subject = ReplaySubject.create<PaginationStateMachine.State>()
     val recordedStates: Observable<PaginationStateMachine.State> =
         subject.observeOn(Schedulers.io())
@@ -26,6 +24,8 @@ class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) 
         dispatchRendering = { super.render(it) }
     )
 
+    fun lastPositionInAdapter() = adapter.itemCount
+
     init {
         INSTANCE = this // I'm just to lazy to setup dagger properly :(
     }
@@ -34,26 +34,4 @@ class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) 
         Timber.d("Screen State to render: $state")
         screenshotTaker.enqueue(state)
     }
-
-    /*
-    override fun render(state: PaginationStateMachine.State) {
-        super.render(state)
-        drawListener.queue.offer(state)
-        Timber.d("View should render $state")
-    }
-
-    inner class ScreenshotTakingDrawListener : ViewTreeObserver.OnPreDrawListener {
-        val queue: Queue<PaginationStateMachine.State> = LinkedList()
-        override fun onPreDraw(): Boolean {
-            if (queue.isNotEmpty()) {
-                Screenshot.snap(rootView).setName("MainView State ${subject.values.size + 1}")
-                    .record()
-                val state = queue.poll()
-                Timber.d("View is drawing --> dispatching $state : Queue $queue")
-                subject.onNext(state)
-            }
-            return true
-        }
-    }
-    */
 }

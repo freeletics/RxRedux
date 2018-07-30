@@ -45,13 +45,12 @@ class MainActivityTest {
     class AndroidScreen(
         private val activityRule: ActivityTestRule<MainActivity>
     ) : Screen {
-        override fun scrollTo(itemAtPosition: Int) {
-            Timber.d("Scroll to $itemAtPosition")
+        override fun scrollToEndOfList() {
             Espresso
                 .onView(ViewMatchers.withId(R.id.recyclerView))
                 .perform(
                     RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                        itemAtPosition
+                        RecordingMainViewBinding.INSTANCE.lastPositionInAdapter() - 1
                     )
                 )
 

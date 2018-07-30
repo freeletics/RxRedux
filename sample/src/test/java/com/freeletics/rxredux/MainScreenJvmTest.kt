@@ -7,6 +7,7 @@ import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
+import io.reactivex.subjects.Subject
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import org.junit.Test
@@ -22,18 +23,10 @@ class MainScreenJvmTest {
     class JvmScreen(
         private val viewModel: MainViewModel
     ) : Screen, StateRecorder {
-        val stateSubject = ReplaySubject.create<PaginationStateMachine.State>()
+        val stateSubject: Subject<PaginationStateMachine.State> = ReplaySubject.create()
 
-        override fun scrollTo(itemAtPosition: Int) {
-            Timber.d("Scroll to $itemAtPosition")
-            val state = stateSubject.values.last()
-            if ((state is PaginationStateMachine.State.ShowContentState && state.items.size - 1 == itemAtPosition)
-                || (state is PaginationStateMachine.State.ShowContentAndLoadNextPageErrorState && state.items.size - 1 == itemAtPosition)
-                || (state is PaginationStateMachine.State.ShowContentAndLoadNextPageState && state.items.size - 1 == itemAtPosition
-                        )
-            ) {
-                Observable.just(Action.LoadNextPageAction).subscribe(viewModel.input)
-            }
+        override fun scrollToEndOfList() {
+            Observable.just(Action.LoadNextPageAction).subscribe(viewModel.input)
         }
 
         override fun retryLoadingFirstPage() {
@@ -72,10 +65,6 @@ class MainScreenJvmTest {
         val paginationStateMachine = applicationComponent
             .paginationStateMachine()
 
-        /*
-        val airplaneModeDecoratedGithubApi =
-            applicationComponent.airplaceModeDecoratedGithubApi() as AirplaneModeDecoratedGithubApi
-*/
         val viewModel = MainViewModel(paginationStateMachine, Schedulers.trampoline())
         val screen = JvmScreen(viewModel)
         viewModel.state.observeForever {
