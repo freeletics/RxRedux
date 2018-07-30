@@ -21,7 +21,7 @@ import java.util.*
  * and then continue processing the next state.
  */
 class QueueingScreenshotTaker(
-    private val rootView: View,
+    rootView: View,
     private val subject: Subject<PaginationStateMachine.State>,
     private val dispatchRendering: (PaginationStateMachine.State) -> Unit
 ) : ViewTreeObserver.OnPreDrawListener {
@@ -39,19 +39,17 @@ class QueueingScreenshotTaker(
 
     fun enqueue(state: PaginationStateMachine.State) {
         Timber.d("Enqueueing $state")
-        queue.offer(QueueEntry(state, QueuedState.ENQUEUD))
+        queue.offer(QueueEntry(state, WaitingState.ENQUEUED))
         dispatchNextWaitingStateIfNothingWaitedToBeDrawn()
     }
 
     private fun dispatchNextWaitingStateIfNothingWaitedToBeDrawn() {
         if (queue.isNotEmpty()) {
             val queueEntry = queue.peek()
-            if (queueEntry.queuedState == QueuedState.ENQUEUD) {
-                // handler.postDelayed(Runnable {
+            if (queueEntry.waitingState == WaitingState.ENQUEUED) {
                 Timber.d("Ready to render (layouting) ${queueEntry.state}. Queue $queue")
-                queueEntry.queuedState = QueuedState.WAITING_TO_BE_DRAWN
+                queueEntry.waitingState = WaitingState.WAITING_TO_BE_DRAWN
                 dispatchRendering(queueEntry.state)
-                // }, 1000)
             } else {
                 Timber.d("Cannot dispatchNextWaitingStateIfNothingWaitedToBeDrawn() because head of queue is already waiting to be drawn $queue")
             }
@@ -63,8 +61,8 @@ class QueueingScreenshotTaker(
         if (queue.isNotEmpty()) {
             val topOfQueue = queue.peek()
             Timber.d("Top of the queue $topOfQueue")
-            if (topOfQueue.queuedState == QueuedState.WAITING_TO_BE_DRAWN) {
-                topOfQueue.queuedState = QueuedState.WAITING_FOR_SCREENSHOT
+            if (topOfQueue.waitingState == WaitingState.WAITING_TO_BE_DRAWN) {
+                topOfQueue.waitingState = WaitingState.WAITING_FOR_SCREENSHOT
                 handler.postDelayed({
                     val (state, _) = queue.poll()
                     Screenshot.snapActivity(activity).setName("MainView State ${screenshotCounter++}")
@@ -90,14 +88,14 @@ class QueueingScreenshotTaker(
         throw RuntimeException("Could not find parent Activity for $this")
     }
 
-    private enum class QueuedState {
-        ENQUEUD,
+    private enum class WaitingState {
+        ENQUEUED,
         WAITING_TO_BE_DRAWN,
         WAITING_FOR_SCREENSHOT
     }
 
     private data class QueueEntry(
         val state: PaginationStateMachine.State,
-        var queuedState: QueuedState
+        var waitingState: WaitingState
     )
 }
