@@ -65,7 +65,7 @@ class QueueingScreenshotTaker(
                 topOfQueue.waitingState = WaitingState.WAITING_FOR_SCREENSHOT
                 handler.postDelayed({
                     val (state, _) = queue.poll()
-                    Screenshot.snapActivity(activity).setName("MainView State ${screenshotCounter++}")
+                    Screenshot.snapActivity(activity).setName("PopularRepositoriesActivity State ${screenshotCounter++}")
                         .record()
                     Timber.d("Drawn $state. Screenshot taken. Queue $queue")
                     subject.onNext(state)
