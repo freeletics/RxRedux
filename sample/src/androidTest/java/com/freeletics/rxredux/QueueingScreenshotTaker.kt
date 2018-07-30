@@ -11,7 +11,6 @@ import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.subjects.Subject
 import timber.log.Timber
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -22,7 +21,7 @@ import java.util.concurrent.TimeUnit
  * and then continue processing the next state.
  */
 class QueueingScreenshotTaker(
-    rootView: View,
+    private val rootView: View,
     private val subject: Subject<PaginationStateMachine.State>,
     private val dispatchRendering: (PaginationStateMachine.State) -> Unit
 ) : ViewTreeObserver.OnPreDrawListener {
@@ -48,11 +47,11 @@ class QueueingScreenshotTaker(
         if (queue.isNotEmpty()) {
             val queueEntry = queue.peek()
             if (queueEntry.queuedState == QueuedState.ENQUEUD) {
-               // handler.postDelayed(Runnable {
-                    Timber.d("View should render --> dispatching ${queueEntry.state} -- Queue $queue")
-                    queueEntry.queuedState = QueuedState.WAITING_TO_BE_DRAWN
-                    dispatchRendering(queueEntry.state)
-               // }, 1000)
+                // handler.postDelayed(Runnable {
+                Timber.d("View should render --> dispatching ${queueEntry.state} -- Queue $queue")
+                queueEntry.queuedState = QueuedState.WAITING_TO_BE_DRAWN
+                dispatchRendering(queueEntry.state)
+                // }, 1000)
             } else {
                 Timber.d("Cannot dispatchNextWaitingStateIfNothingWaitedToBeDrawn() because head of queue is already waiting to be drawn $queue")
             }
@@ -62,7 +61,7 @@ class QueueingScreenshotTaker(
     override fun onPreDraw(): Boolean {
         Timber.d("drawing. Queue $queue")
         if (queue.isNotEmpty()) {
-            Screenshot.snapActivity(activity).setName("MainView State ${screenshotCounter++}")
+            Screenshot.snap(rootView).setName("MainView State ${screenshotCounter++}")
                 .record()
             val queueEntry = queue.poll()
             Timber.d("View is drawn, screenshot taken --> dispatching ${queueEntry.state} : Queue $queue")
