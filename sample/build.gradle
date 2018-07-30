@@ -76,11 +76,13 @@ dependencies {
     implementation libraries.dagger
     kapt libraries.daggerCompiler
     implementation project(':library')
-    implementation testLibraries.okhttpTls
+    implementation (testLibraries.okhttpTls){
+        exclude group: 'org.bouncycastle'
+    }
     //implementation "org.bouncycastle:bcprov-jdk15on:1.50"
     //implementation "org.bouncycastle:bcprov-ext-jdk15on:1.50"
     // implementation "org.bouncycastle:bcpkix-jdk15on:1.50"
-    //implementation "org.bouncycastle:bctls-jdk15on:1.60"
+    implementation "org.bouncycastle:bctls-jdk15on:1.60"
 
     testImplementation 'junit:junit:4.12'
     testImplementation "android.arch.core:core-testing:1.1.1"
