@@ -31,6 +31,7 @@ class RecordingMainViewBinding(rootView: ViewGroup) : MainViewBinding(rootView) 
     }
 
     override fun render(state: PaginationStateMachine.State) {
+        Timber.d("Screen State to render: $state")
         screenshotTaker.enqueue(state)
     }
 

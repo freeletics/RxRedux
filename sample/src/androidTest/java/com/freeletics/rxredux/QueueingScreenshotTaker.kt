@@ -48,7 +48,7 @@ class QueueingScreenshotTaker(
             val queueEntry = queue.peek()
             if (queueEntry.queuedState == QueuedState.ENQUEUD) {
                 // handler.postDelayed(Runnable {
-                Timber.d("View should render --> dispatching ${queueEntry.state} -- Queue $queue")
+                Timber.d("Ready to render (layouting) ${queueEntry.state}. Queue $queue")
                 queueEntry.queuedState = QueuedState.WAITING_TO_BE_DRAWN
                 dispatchRendering(queueEntry.state)
                 // }, 1000)
@@ -59,14 +59,21 @@ class QueueingScreenshotTaker(
     }
 
     override fun onPreDraw(): Boolean {
-        Timber.d("drawing. Queue $queue")
+        Timber.d("onPreDraw. Queue $queue")
         if (queue.isNotEmpty()) {
-            Screenshot.snap(rootView).setName("MainView State ${screenshotCounter++}")
-                .record()
-            val queueEntry = queue.poll()
-            Timber.d("View is drawn, screenshot taken --> dispatching ${queueEntry.state} : Queue $queue")
-            subject.onNext(queueEntry.state)
-            dispatchNextWaitingStateIfNothingWaitedToBeDrawn()
+            val topOfQueue = queue.peek()
+            Timber.d("Top of the queue $topOfQueue")
+            if (topOfQueue.queuedState == QueuedState.WAITING_TO_BE_DRAWN) {
+                topOfQueue.queuedState = QueuedState.WAITING_FOR_SCREENSHOT
+                handler.postDelayed({
+                    val (state, _) = queue.poll()
+                    Screenshot.snap(rootView).setName("MainView State ${screenshotCounter++}")
+                        .record()
+                    Timber.d("Drawn $state. Screenshot taken. Queue $queue")
+                    subject.onNext(state)
+                    dispatchNextWaitingStateIfNothingWaitedToBeDrawn()
+                }, 1000) // Wait until all frames has been drawn
+            }
         }
         return true
     }
@@ -86,6 +93,7 @@ class QueueingScreenshotTaker(
     private enum class QueuedState {
         ENQUEUD,
         WAITING_TO_BE_DRAWN,
+        WAITING_FOR_SCREENSHOT
     }
 
     private data class QueueEntry(
