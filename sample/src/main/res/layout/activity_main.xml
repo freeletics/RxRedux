@@ -42,6 +42,7 @@
         android:drawablePadding="12dp"
         android:text="@string/unexpected_error_retry"
         android:gravity="center"
+        android:background="@android:color/transparent"
         />
 
 </android.support.constraint.ConstraintLayout>

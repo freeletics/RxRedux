@@ -2,6 +2,11 @@ package com.freeletics.rxredux
 
 import android.content.Intent
 import android.support.test.espresso.Espresso
+import android.support.test.espresso.ViewAction
+import android.support.test.espresso.action.GeneralLocation
+import android.support.test.espresso.action.GeneralSwipeAction
+import android.support.test.espresso.action.Press
+import android.support.test.espresso.action.Swipe
 import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.contrib.RecyclerViewActions
 import android.support.test.espresso.matcher.ViewMatchers
@@ -16,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import timber.log.Timber
+
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -45,9 +51,14 @@ class MainActivityTest {
                 .onView(ViewMatchers.withId(R.id.recyclerView))
                 .perform(
                     RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
-                        10
+                        itemAtPosition
                     )
                 )
+
+            Espresso
+                .onView(ViewMatchers.withId(R.id.recyclerView))
+                .perform(swipeFromBottomToTop())
+
         }
 
         override fun retryLoadingFirstPage() {
@@ -58,10 +69,16 @@ class MainActivityTest {
         override fun loadFirstPage() {
             activityRule.launchActivity(Intent())
         }
+
+        private fun swipeFromBottomToTop(): ViewAction {
+            return GeneralSwipeAction(
+                Swipe.FAST, GeneralLocation.BOTTOM_CENTER,
+                GeneralLocation.TOP_CENTER, Press.FINGER
+            )
+        }
     }
 
     inner class AndroidStateRecorder : StateRecorder {
-
         override fun renderedStates(): Observable<PaginationStateMachine.State> =
             RecordingMainViewBinding.INSTANCE.recordedStates
     }

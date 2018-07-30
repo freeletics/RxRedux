@@ -10,6 +10,7 @@ import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.Observable
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 
 open class MainViewBinding(protected val rootView: ViewGroup) {
@@ -42,7 +43,7 @@ open class MainViewBinding(protected val rootView: ViewGroup) {
         emitter.setCancellable { recyclerView.removeOnScrollListener(listener) }
 
         recyclerView.addOnScrollListener(listener)
-    }
+    }.debounce(200, TimeUnit.MILLISECONDS)
 
     open fun render(state: PaginationStateMachine.State) =
         when (state) {

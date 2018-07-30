@@ -19,9 +19,9 @@ class TestApplicationModule(
 
     override fun provideOkHttp(): OkHttpClient =
         super.provideOkHttp().newBuilder()
-            .writeTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(5, TimeUnit.SECONDS)
-            .connectTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(6, TimeUnit.SECONDS)
+            .readTimeout(6, TimeUnit.SECONDS)
+            .connectTimeout(6, TimeUnit.SECONDS)
             .also {
                 // TODO https://github.com/square/okhttp/issues/4183
                 /*
