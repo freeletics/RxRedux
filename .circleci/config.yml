@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  buildAndTest:
     docker:
       - image: circleci/android:api-27-alpha
     environment:
@@ -38,7 +38,7 @@ workflows:
   version: 2
   check-pr:
     jobs:
-      - build:
+      - buildAndTest:
         filters:
           branches:
             ignore:
