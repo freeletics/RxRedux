@@ -17,6 +17,7 @@ jobs:
           paths:
             - ~/.gradle
           key: dependencies-{{ checksum "dependencies.gradle" }}-{{ checksum  "dependencies.gradle" }}
+
   deploy_snapshot:
   branches:
       only:
@@ -29,7 +30,6 @@ jobs:
         gpg --import signingkey.asc --passphrase $PGP_KEY
         rm signingkey.asc
         gpg --list-keys
-
 
     - run:
         name: "Deploy snapshot or release"
