@@ -4,9 +4,33 @@ that helps to isolate side effects.
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/RxRedux-in-a-nutshell.png)
 
-## State of this repository
-Why is there no code in this repository?
-We haven't published the code yet. We wanted to share first how the API looks like to get Feedback early and not reinvent the wheel (and maybe combine forces if there are similar efforts going on).
+## Dependency
+Dependencies are hosted on Maven Central:
+
+```
+implementation 'com.freeletics.rxredux:rxredux:1.0.0'
+```
+Keep in mind that this is library is written in kotlin which means you also add `kotlin-stdlib` to your project by using RxRedux.
+
+#### Snapshot
+Latest snapshot (directly published from master branch from Travis CI):
+
+```
+allprojects {
+    repositories {
+        ...
+        // Add url to snapshot repository
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+}
+
+```
+
+```
+implementation 'com.freeletics.rxredux:rxredux:1.0.1-SNAPSHOT'
+```
 
 ## How is this different from other Redux implementations like [Mobius](https://github.com/spotify/mobius)
 In contrast to any other Redux inspired library out there, this library is really backed on top of RxJava (Mobius just offers some extensions to use RxJava for async works). 
