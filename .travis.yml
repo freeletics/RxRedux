@@ -1,5 +1,4 @@
 language: android
-
 android:
   components:
   - platform-tools
@@ -10,27 +9,20 @@ android:
   - extra-android-m2repository
   licenses:
   - android-sdk-license-.+
-
 jdk:
 - oraclejdk8
-
 branches:
   except:
   - gh-pages
-
 notifications:
   email: false
-
 sudo: false
-
 script: "./gradlew build test"
-
 cache:
   directories:
   - "$HOME/.gradle"
-
 env:
   global:
-
+    secure: onEexL+D+rhQKj6/0s2ySkc0+Xpvul6ZRGTA0slZfE1caZx8Gp2g3vanYmI69ZqRmJIQFeUsOTZQxYwWrv2eAWSUXtPhCCdgnpY5duaOiVCB2uHSZYtp4hTkW94V/N2kyjnD0BkylwJzU6XlSpsmXXwd7LRSnPUmsZPFgYiIm3B53Ww57RGLwaBz2EZDGt0ExHDZ4NlIjZAcUr6bdIzpVVoYLX21dChxYOalHMzmdk4L6aWTWVG/Cxoa+MzBNAg6p7HPmnVj23lq+RR0fHJY2Xr3PevNtBUhiVjS494IEnr5b9h2MT47PDwDEymKGd9cFaQF8x4h0Tj3gAAUEUrkzz3dRDZ7jc3qADBK95Zr4krGuCiUgkQ8yzk+FQpHfhiNspHD0td8PxmDy3cdxdn9/Hn474JQW0PBYot3gJpDTEs5OYQMDhE+Ier/gGgVyFbybj8bp7nRUYga3F1Ac9wlHoqmFy+Do8dG7canseBtkZxKx1WanDbKDEHiWq+e0IJyd66kh1ma/J91fp+HC2/zZaqSISboK/dbERrzWFtJu7S7dmIhXhJWOgizRqXzsGnoEhd5wSaZENLoaY0PqDH6x/kZi+bsT1vOVUhjIL3P9yHbbBxnLOEjEON2AQN12dI80TtvJDp6OEIYPJRzT3giH9KYA/33VgDKcbGCuCVLd4w=
 after_success:
-  - ./deploy.sh
+- "./deploy.sh"
