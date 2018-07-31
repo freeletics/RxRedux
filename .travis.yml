@@ -17,7 +17,7 @@ branches:
 notifications:
   email: false
 sudo: false
-script: ./gradlew :library:build :library:test :sample:assembleDebug :sample:testDebug
+script: "./gradlew :library:build :library:test :sample:assembleDebug :sample:testDebug"
 cache:
   directories:
   - "$HOME/.gradle"
@@ -28,3 +28,4 @@ env:
   - secure: sX+5o0SKd+D/hqgwvuqzdXYcPJzhedmsjHy5kat/jJlJPAOMRndtoHpBLPOP35JkcmYgg6jH411suF/jSI4onhP5vcp+cMW77WenT6JwTcMtTXglg02I0X5orlpEwb4PzHRIGhZVClrYh40OOtNl5wgDX0d3COUsmCGrd2ZETAONU2W8gkUPY7jmRvwuHwDE8b/Y4T4UELktgNg9dFNttujE4ikEa5TUbZ/OCDOYCQy9WVj6nqcolfseQKGHXYWxpPjMmKJFuMTL7qQFC7ZQSXi7lXkdAjMtCb/tQ4TvDIgLkZZwVmQpw40SOQCm6WFHDRBBNwvQYVrEC9Lh9H1pPRfktb4EGJSE6FNC5/K6ZHV20PKyMkUhA/v12/G46RT/ZmqeuPZAvp7Z6sNYn7fLF/6dPYH2+l0DPSIEYxYauoD00AR0EmXqw+ghrONuVdLcpUIi7TLBCFjoXKmED4J3LfR+1ZTtpCsZQw/l4YH7xkT0cED9QkKTWYuQJtDqX0oCLYdz3C9v1OxA+1g+JHD+MDQUPyUyoegFp3KKkPCxyZyiezhVZ1tGpnvHiVG8rpdGhLJlT4Ve+1fCCFBVUjyNVrjg5i+fVN0Pm3kPpWI8Hzz3a7gnKHDchebmdAISFqgIOXcapgToDitE4lDTD7sJQ/6ZrPqGsebZdNSiFv4KJlg=
 after_success:
 - "./deploy.sh"
+

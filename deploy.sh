@@ -21,10 +21,11 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping  deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
 else
   echo "Deploying ..."
-  openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in Freeletics.asc.enc -out Freeletics.asc -d
-  echo $PGP_KEY | gpg --passphrase-fd 0 --import Freeletics.asc
-  rm Freeletics.asc
-  gpg --list-keys
+  openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in freeletics.gpg.enc -out freeletics.gpg -d
+  echo "signing.password=$PGP_KEY" >> library/gradle.properties
+  echo "signing.secretKeyRingFile=$PWD/freeletics.gpg" >> library/gradle.properties
   ./gradlew :library:uploadArchives
+  rm freeletics.gpg
+  git reset --hard
   echo "Snapshot deployed!"
 fi
