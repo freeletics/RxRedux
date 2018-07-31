@@ -1,0 +1,36 @@
+language: android
+
+android:
+  components:
+  - platform-tools
+  - tools
+  - android-27
+  - build-tools-27.0.3
+  - extra-android-support
+  - extra-android-m2repository
+  licenses:
+  - android-sdk-license-.+
+
+jdk:
+- oraclejdk8
+
+branches:
+  except:
+  - gh-pages
+
+notifications:
+  email: false
+
+sudo: false
+
+script: "./gradlew build test"
+
+cache:
+  directories:
+  - "$HOME/.gradle"
+
+env:
+  global:
+
+after_success:
+  - ./deploy.sh
