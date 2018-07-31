@@ -1,7 +1,6 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/code
     docker:
       - image: circleci/android:api-27-alpha
     environment:
@@ -19,6 +18,8 @@ jobs:
           key: dependencies-{{ checksum "dependencies.gradle" }}-{{ checksum  "dependencies.gradle" }}
 
   deploy_snapshot:
+    docker:
+      - image: circleci/android:api-27-alpha
     branches:
         only:
           - master
