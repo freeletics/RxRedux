@@ -61,21 +61,17 @@ val initialState = State(
 
 ```kotlin
 sealed class Action {
-    sealed class UserAction : Action(){   // Actions triggered by the user
-    object LoadNextPageAction : UserAction()    // Action to load the first page
-  }
-  
-  sealed class SideEffectAction : Action() { // Actions triggered by a side effect
-    data class PageLoadedAction(val personsLoaded : List<Person>, val page : Int) : SideEffectAction() // Persons has been loaded
-    object LoadPageAction : SideEffectAction() // Started loading the list of persons
-    data class ErrorLoadingNextPageAction(val error : Throwable) : SideEffectAction() // An error occurred while loading
-  }
+    object LoadNextPageAction : Action()  // Action to load the first page. Triggered by the user.
+
+    data class PageLoadedAction(val personsLoaded : List<Person>, val page : Int) : Action() // Persons has been loaded
+    object LoadPageAction : Action() // Started loading the list of persons
+    data class ErrorLoadingNextPageAction(val error : Throwable) : Action() // An error occurred while loading
 }
 ```
 
 ```kotlin
-val loadNextPageSideEffect : SideEffect<State, Action> = {  // Side effect is just a type alias for a function
-  actions : Observable<Action>,  state : StateAccessor<State> -> 
+// SideEffect is just a type alias for such a function:
+fun loadNextPageSideEffect (actions : Observable<Action>, StateAccessor<State>) : Observable<Action> =
   actions
     .ofType(LoadNextPageAction::class.java) // This side effect only runs for actions of type LoadNextPageAction
     .switchMap {
@@ -91,14 +87,12 @@ val loadNextPageSideEffect : SideEffect<State, Action> = {  // Side effect is ju
            }
           .onErrorReturn { error -> ErrorLoadingNextPageAction(error) }
           .startWith(LoadPageAction)
-     }
-  }
-}
+    }
 ```
 
 ```kotlin
-val reducer : Reducer<State, Action> = { // Reducer is just a typealias for a function (State, Action) -> State
-  state : State, action: Action ->
+// Reducer is just a typealias for a function
+fun reducer(state : Statine, action : Action) : State =
   when(action) {
     is LoadPageAction -> state.copy (loadingNextPage = true)
     is ErrorLoadingNextPageAction -> state.copy( loadingNextPage = false, errorLoadingNextPage = action.error)
@@ -110,24 +104,24 @@ val reducer : Reducer<State, Action> = { // Reducer is just a typealias for a fu
     )
     else -> state // Reducer is actually not handling this action (a SideEffect does it)
   }
-}
 ```
 
 
 ```kotlin
 val actions : Observable<Action> = ...
-val sideEffects : List<SideEffect<State, Action> = listof(loadNextPageSideEffect, ... )
+val sideEffects : List<SideEffect<State, Action> = listof(::loadNextPageSideEffect, ... )
 
 actions
-  .reduxStore( initialState, sideEffects, reducer )
+  .reduxStore( initialState, sideEffects, ::reducer )
   .subscribe( state -> view.render(state) )
 ```
 
-The following images illustrate the workflow:
+The [following video](https://youtu.be/M7lx9Y9ANYo) (click on it) illustrate the workflow:
+
+[![RxRedux explanation](https://youtu.be/M7lx9Y9ANYo)](https://youtu.be/M7lx9Y9ANYo)
+
 
 0. Let's take a look at the following illustration:
-![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step0
-.png)
 The blue box is the `View` (think UI). 
 `Presenter` or `ViewModel` has not been drawn for the sake of readability but you can think of having such additional layers between View and Redux State Machine.
 The yellow box represents a `Store`. 
@@ -137,26 +131,15 @@ Additionally, a green circle represent `State` and a red circle represent an `Ac
 On the right you see a UI mock of a mobile app to illustrate UI changes.
 
 1. `NextPageAction` get triggered from the UI (by scrolling at the end of the list). Every `Action` goes through the `reducer` and all `SideEffects` registered for this type of Action.
-![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step1.png)
 
 2. `Reducer` is not interresting on `NextPageAction`. So while `NextPageAction` goes through the reducer, it doesn't change the state. 
-![Step2](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step2.png)
 
 3. `loadNextPageSideEffect` (pink box), however, cares about `NextPageAction`. This is the trigger to run the side-effect
 
-![Stpe3](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step2.png)
-
 4. So `loadNextPageSideEffect` takes `NextPageAction` and starts doing the job and makes the http request to load the next page from backend. Before doing that, this side effect starts with emitting `LoadPageAction`.
 
-![Step4](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step4.png)
-
 5. `Reducer` takes `LoadPageAction` emitted from the side effect and reacts on it by "reducing the state". 
-This means `Reducer` knows how to react on `LoadPageAction` to compute the new state (showing progress indicator at the bottom of the list). 
-
-![Step5](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step5.png)
-![Step6](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step6.png)
-![Step7](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step7.png)
-
+This means `Reducer` knows how to react on `LoadPageAction` to compute the new state (showing progress indicator at the bottom of the list).
 Please note that the state has changed (highlighted in green) which results in also changing the UI (progress indicator at the end of the list).
 
 6. Once `loadNextPageSideEffect` got the result back from backend the side effect emits a new `PageLoadedAction`. 
@@ -165,15 +148,8 @@ This Action contains a "payload" - the loaded data.
 ```kotlin
 data class PageLoadedAction(val personsLoaded : List<Person>, val page : Int)
 ```
-![Step8](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step8.png)
-![Step9](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step9.png)
 
 7. As any other Action `PageLoadedAction` goes through the `Reducer`. The Reducer processes this Action and computes a new state out of it by appending the loaded data to the already existing data (progress bar also is hidden).
-
-![Step10](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/Step10.png)
-![Step11](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/Step11.png)
-![Step12](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/Step12.png)
-
 
 Final remark:
 This system allows you to create a plugin in system of `SideEffects` that are highly reusable and specific to do a single use case.
@@ -203,7 +179,7 @@ inputActions
 ```
 
 The problem is that from upstream we get `Int 1`.
-But since `sideeffect` reacts on that action `Int 1` too, it computes `1 * 2` and emits `2`, which then again gets handled by the same SideEffect ` 2 * 2 = 4` and emits `4`, which then again gets handled by the same SideEffect `4 * 2 = 8` and emits `8`, which then getst handled by the same SideEffect and so on (endless loop) ...
+But since `SideEffect` reacts on that action `Int 1` too, it computes `1 * 2` and emits `2`, which then again gets handled by the same SideEffect ` 2 * 2 = 4` and emits `4`, which then again gets handled by the same SideEffect `4 * 2 = 8` and emits `8`, which then getst handled by the same SideEffect and so on (endless loop) ...
 
 ### Who processes an `Action` from upstream first: `Reducer` or `SideEffect`?
 
@@ -248,7 +224,7 @@ So the workflow is as follows:
 5. `SideEffect2` reacts on `OtherAction` and emits `YetAnotherAction`
 6. `reducer` processes `YetAnotherAction`
 
-### Can I use `fun` for `SideEffects` or `Reducer`?
+### Can I use `val` and `fun` for `SideEffects` or `Reducer`?
 
 Absolutely. `SideEffect` is just a type alias for a function `(actions: Observable<Action>, state: StateAccessor<State>) -> Observable<out Action>`.
 
@@ -292,4 +268,15 @@ val reducer = { state, action -> ... }
 fun reducer(state : State, action : Action) : State {
   ...
 }
+```
+
+### Is `distinctUntilChanged` is considered as best practice?
+Yes it is because `.reduxStore(...)` is not taking care of only emitting state that has been changed
+compared to previous state.
+Therefore, `.distinctUntilChanged()` is considered as best practice.
+```kotlin
+actions
+    .reduxStore( ... )
+    .distinctUntilChanged()
+    .subscribe { state -> view.render(state) }
 ```
