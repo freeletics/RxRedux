@@ -22,12 +22,12 @@ jobs:
       - image: circleci/android:api-27-alpha
     steps:
       - run:
-        name: "Setup signing key"
-        command: |
-          openssl aes-256-cbc -d -a -in .circleci/Freeletics.asc.enc -out signingkey.asc -pass pass:$DECRYPTION_KEY
-          gpg --import signingkey.asc --passphrase $PGP_KEY
-          rm signingkey.asc
-          gpg --list-keys
+          name: "Setup signing key"
+          command: |
+              openssl aes-256-cbc -d -a -in .circleci/Freeletics.asc.enc -out signingkey.asc -pass pass:$DECRYPTION_KEY
+              gpg --import signingkey.asc --passphrase $PGP_KEY
+              rm signingkey.asc
+              gpg --list-keys
 
       - run:
           name: "Deploy snapshot or release"
