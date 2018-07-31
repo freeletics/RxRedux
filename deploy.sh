@@ -25,7 +25,7 @@ else
   echo $PGP_KEY | gpg --passphrase-fd 0 --import Freeletics.asc
   rm Freeletics.asc
   gpg --list-keys
-  gpg --delete-key D39DC0E3 --batch --yes
+  gpg --delete-key D39DC0E3 --yes
   gpg --list-keys
   echo "Snapshot deployed!"
 fi
