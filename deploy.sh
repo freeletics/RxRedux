@@ -21,8 +21,8 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping  deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
 else
   echo "Deploying ..."
-  openssl aes-256-cbc -K $encrypted_0a6446eb3ae3_key -iv $encrypted_0a6446eb3ae3_iv -in Freeletics.asc.enc -out Freeletics.asc -d
-  gpg --import signingkey.asc --passphrase $PGP_KEY
+  openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in Freeletics.asc.enc -out Freeletics.asc -d
+  gpg --import Freeletics.asc --passphrase $PGP_KEY
   rm Freeletics.asc
   gpg --list-keys
   echo "Snapshot deployed!"

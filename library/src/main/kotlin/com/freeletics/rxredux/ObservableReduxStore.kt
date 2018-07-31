@@ -106,6 +106,8 @@ private class ObservableReduxStore<S, A>(
 
         actionsSubject.subscribe(storeObserver) // This will make the reducer run on each action
 
+        // TODO should SideEffects be composed with ObservableTransformer?
+        // That would be the more idiomatic way I guess.
         sideEffects.forEach { sideEffect ->
             disposables += sideEffect(actionsSubject, storeObserver::currentState)
                 .subscribe({ action ->
@@ -117,7 +119,7 @@ private class ObservableReduxStore<S, A>(
                     // passed in as parameter similar to what Observable.timer() does.
 
                 }, { error ->
-                    actionsSubject.onError(error)
+                    actionsSubject.onError(error) // Error in SideEffect causes whole stream to fail
                 }, {
                     // Swallow onComplete because just if one SideEffect reaches onComplete we don't want to make
                     // everything incl. ReduxStore and other SideEffects reach onComplete

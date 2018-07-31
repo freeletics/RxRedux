@@ -164,10 +164,12 @@ Also `SideEffects` can be invoked by `Actions` from other `SideEffects`.
 This is a common pitfall and is most of the time caused by the fact that an `SideEffect` emits an `Action` as output that it also consumes from upstream leading to a infinite loop.
 
 ```kotlin
-val inputActions = Observable.just(1)
 
-val sideEffect: SideEffect<Int, Int> =
-            { actions, state -> actions.map{ it * 2} }
+val sideEffect: SideEffect<Int, State> = { actions, state ->
+    actions.map { it * 2 }
+}
+
+val inputActions = Observable.just(1)
 
 inputActions
     .reduxStore(
