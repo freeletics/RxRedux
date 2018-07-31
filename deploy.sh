@@ -21,7 +21,7 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping  deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
 else
   echo "Deploying ..."
-  gpg --delete-secret-key 4096R/D39DC0E3
+  gpg --delete-secret-keys 4096R/D39DC0E3
   openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in Freeletics.asc.enc -out Freeletics.asc -d
   echo $PGP_KEY | gpg --passphrase-fd 0 --import Freeletics.asc
   rm Freeletics.asc
