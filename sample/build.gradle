@@ -75,7 +75,7 @@ dependencies {
     implementation libraries.moshiKotlin
     implementation libraries.moshi
 
-   // kapt libraries.moshiCodeGen
+    kapt libraries.moshiCodeGen
     implementation libraries.moshi
     implementation libraries.dagger
     kapt libraries.daggerCompiler
