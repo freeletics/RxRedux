@@ -20,7 +20,8 @@ jobs:
   deploy_snapshot:
     docker:
       - image: circleci/android:api-27-alpha
-    branches:
+    filters:
+      branches:
         only:
           - master
     steps:
