@@ -17,13 +17,9 @@ jobs:
             - ~/.gradle
           key: dependencies-{{ checksum "dependencies.gradle" }}-{{ checksum  "dependencies.gradle" }}
 
-  deploy_snapshot:
+  deployToMavenCentral:
     docker:
       - image: circleci/android:api-27-alpha
-    filters:
-      branches:
-        only:
-          - master
     steps:
       - run:
         name: "Setup signing key"
@@ -36,3 +32,22 @@ jobs:
       - run:
           name: "Deploy snapshot or release"
           command: echo "Done"
+
+
+workflows:
+  version: 2
+  check-pr:
+    jobs:
+      - build:
+        filter:
+          branches:
+            ignore:
+              - master
+
+  deploy:
+    jobs:
+      - deployToMavenCentral:
+        filter:
+          branches:
+            only:
+              - master
