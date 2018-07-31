@@ -39,15 +39,15 @@ workflows:
   check-pr:
     jobs:
       - buildAndTest:
-        filters:
-          branches:
-            ignore:
-              - master
+          filters:
+            branches:
+              ignore:
+                - master
 
   deploy:
     jobs:
       - deployToMavenCentral:
-        filters:
-          branches:
-            only:
-              - master
+          filters:
+            branches:
+              only:
+                - master
