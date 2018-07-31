@@ -25,6 +25,6 @@ else
   echo $PGP_KEY | gpg --passphrase-fd 0 --import Freeletics.asc
   rm Freeletics.asc
   gpg --list-keys
-  ./gradle uploadArtifacts
+  ./gradlew :library:uploadArchives
   echo "Snapshot deployed!"
 fi
