@@ -118,7 +118,7 @@ actions
 
 The [following video](https://youtu.be/M7lx9Y9ANYo) (click on it) illustrate the workflow:
 
-[![RxRedux explanation](https://youtu.be/M7lx9Y9ANYo)](https://youtu.be/M7lx9Y9ANYo)
+[![RxRedux explanation](https://i.ytimg.com/vi/M7lx9Y9ANYo/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAqwunKP2_qGE0HYUlquWkFccM5MA)](https://youtu.be/M7lx9Y9ANYo)
 
 
 0. Let's take a look at the following illustration:
@@ -270,7 +270,7 @@ fun reducer(state : State, action : Action) : State {
 }
 ```
 
-### Is `distinctUntilChanged` is considered as best practice?
+### Is `distinctUntilChanged` considered as best practice?
 Yes it is because `.reduxStore(...)` is not taking care of only emitting state that has been changed
 compared to previous state.
 Therefore, `.distinctUntilChanged()` is considered as best practice.
