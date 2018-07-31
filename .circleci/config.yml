@@ -23,3 +23,19 @@ jobs:
       - run:
           name: Install signing keys
           command: gpg --list-keys
+
+
+workflows:
+  version: 2
+  publish_on_maven_central:
+    jobs:
+      - build
+      - test1:
+          requires:
+            - build
+      - test2:
+          requires:
+            - test1
+      - deploy:
+          requires:
+            - test2
