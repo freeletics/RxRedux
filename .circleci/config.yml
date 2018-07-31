@@ -39,7 +39,7 @@ workflows:
   check-pr:
     jobs:
       - build:
-        filter:
+        filters:
           branches:
             ignore:
               - master
@@ -47,7 +47,7 @@ workflows:
   deploy:
     jobs:
       - deployToMavenCentral:
-        filter:
+        filters:
           branches:
             only:
               - master
