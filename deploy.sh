@@ -25,8 +25,6 @@ else
   echo $PGP_KEY | gpg --passphrase-fd 0 --import Freeletics.asc
   rm Freeletics.asc
   gpg --list-keys
-  gpg –-batch --yes --delete-key D39DC0E3
-  echo "print it afterwards"
-  gpg --list-keys
+  ./gradle uploadArtifacts
   echo "Snapshot deployed!"
 fi

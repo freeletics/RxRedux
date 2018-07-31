@@ -17,7 +17,7 @@ branches:
 notifications:
   email: false
 sudo: false
-script: ./gradlew --version
+script: ./gradlew :library:build :library:test :sample:assembleDebug :sample:testDebug
 cache:
   directories:
   - "$HOME/.gradle"
