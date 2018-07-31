@@ -19,18 +19,18 @@ jobs:
           key: dependencies-{{ checksum "dependencies.gradle" }}-{{ checksum  "dependencies.gradle" }}
 
   deploy_snapshot:
-  branches:
-      only:
-        - master
-  steps:
-    - run:
-      name: "Setup signing key"
-      command: |
-        openssl aes-256-cbc -d -a -in .circleci/Freeletics.asc.enc -out signingkey.asc -pass pass:$DECRYPTION_KEY
-        gpg --import signingkey.asc --passphrase $PGP_KEY
-        rm signingkey.asc
-        gpg --list-keys
+    branches:
+        only:
+          - master
+    steps:
+      - run:
+        name: "Setup signing key"
+        command: |
+          openssl aes-256-cbc -d -a -in .circleci/Freeletics.asc.enc -out signingkey.asc -pass pass:$DECRYPTION_KEY
+          gpg --import signingkey.asc --passphrase $PGP_KEY
+          rm signingkey.asc
+          gpg --list-keys
 
-    - run:
-        name: "Deploy snapshot or release"
-        command: echo "Done"
+      - run:
+          name: "Deploy snapshot or release"
+          command: echo "Done"
