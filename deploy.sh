@@ -22,7 +22,7 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
 else
   echo "Deploying ..."
   openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in Freeletics.asc.enc -out Freeletics.asc -d
-  gpg --import Freeletics.asc --passphrase $PGP_KEY
+  echo $PGP_KEY | gpg --passphrase-fd 0 --import Freeletics.asc
   rm Freeletics.asc
   gpg --list-keys
   echo "Snapshot deployed!"
