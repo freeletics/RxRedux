@@ -10,9 +10,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependencies-{{ checksum "dependencies.gradle" }}-{{ checksum  "dependencies.gradle" }}
-#      - run:
-#         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-#         command: sudo chmod +x ./gradlew
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
@@ -20,22 +17,19 @@ jobs:
           paths:
             - ~/.gradle
           key: dependencies-{{ checksum "dependencies.gradle" }}-{{ checksum  "dependencies.gradle" }}
-      - run:
-          name: Install signing keys
-          command: gpg --list-keys
+  deploy_snapshot:
+  branches:
+      only:
+        - master
+  steps:
+    - run:
+      name: "Setup signing key"
+      command: |
+        openssl aes-256-cbc -d -a -in .circleci/Freeletics.asc.enc -out signingkey.asc -pass pass:$DECRYPTION_KEY
+        gpg --import signingkey.asc --passphrase $PGP_KEY
+        rm signingkey.asc
 
 
-workflows:
-  version: 2
-  publish_on_maven_central:
-    jobs:
-      - build
-      - test1:
-          requires:
-            - build
-      - test2:
-          requires:
-            - test1
-      - deploy:
-          requires:
-            - test2
+    - run:
+        name: "Deploy snapshot or release"
+        command: echo "Done"
