@@ -87,7 +87,7 @@ val initialState = State(
 
 ```kotlin
 sealed class Action {
-    object LoadNextPageAction : Action()  // Action to load the first page. Triggered by the user.
+    object LoadNextPageAction : Action() // Action to load the first page. Triggered by the user.
 
     data class PageLoadedAction(val personsLoaded : List<Person>, val page : Int) : Action() // Persons has been loaded
     object LoadPageAction : Action() // Started loading the list of persons
@@ -97,7 +97,7 @@ sealed class Action {
 
 ```kotlin
 // SideEffect is just a type alias for such a function:
-fun loadNextPageSideEffect (actions : Observable<Action>, StateAccessor<State>) : Observable<Action> =
+fun loadNextPageSideEffect (actions : Observable<Action>, state: StateAccessor<State>) : Observable<Action> =
   actions
     .ofType(LoadNextPageAction::class.java) // This side effect only runs for actions of type LoadNextPageAction
     .switchMap {
@@ -135,7 +135,7 @@ fun reducer(state : Statine, action : Action) : State =
 
 ```kotlin
 val actions : Observable<Action> = ...
-val sideEffects : List<SideEffect<State, Action> = listof(::loadNextPageSideEffect, ... )
+val sideEffects : List<SideEffect<State, Action> = listOf(::loadNextPageSideEffect, ... )
 
 actions
   .reduxStore( initialState, sideEffects, ::reducer )
@@ -153,12 +153,12 @@ The blue box is the `View` (think UI).
 The yellow box represents a `Store`. 
 The grey box is the `reducer`. 
 The pink box is a `SideEffect`
-Additionally, a green circle represent `State` and a red circle represent an `Action` (see next step).
+Additionally, a green circle represents `State` and a red circle represents an `Action` (see next step).
 On the right you see a UI mock of a mobile app to illustrate UI changes.
 
 1. `NextPageAction` get triggered from the UI (by scrolling at the end of the list). Every `Action` goes through the `reducer` and all `SideEffects` registered for this type of Action.
 
-2. `Reducer` is not interresting on `NextPageAction`. So while `NextPageAction` goes through the reducer, it doesn't change the state. 
+2. `Reducer` is not interesting on `NextPageAction`. So while `NextPageAction` goes through the reducer, it doesn't change the state.
 
 3. `loadNextPageSideEffect` (pink box), however, cares about `NextPageAction`. This is the trigger to run the side-effect
 
@@ -168,7 +168,7 @@ On the right you see a UI mock of a mobile app to illustrate UI changes.
 This means `Reducer` knows how to react on `LoadPageAction` to compute the new state (showing progress indicator at the bottom of the list).
 Please note that the state has changed (highlighted in green) which results in also changing the UI (progress indicator at the end of the list).
 
-6. Once `loadNextPageSideEffect` got the result back from backend the side effect emits a new `PageLoadedAction`. 
+6. Once `loadNextPageSideEffect` gets the result back from backend, the side effect emits a new `PageLoadedAction`.
 This Action contains a "payload" - the loaded data.
 
 ```kotlin
@@ -215,7 +215,7 @@ Since every Action runs through both `Reducer` and registered `SideEffects` this
 Technically speaking `Reducer` gets every `Action` from upstream before the registered `SideEffects`.
 The idea behind this is that a `Reducer` may change already the state before a `SideEffect` starts processing the action.
 
-For example lets assume upstream only emits exactly one action (because then it's simpler to illustrate the squence of workflow):
+For example let's assume upstream only emits exactly one action (because then it's simpler to illustrate the sequence of workflow):
 
 ```kotlin
 // 1. upstream emits events
