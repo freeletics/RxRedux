@@ -4,6 +4,8 @@ that helps to isolate side effects.
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/RxRedux-in-a-nutshell.png)
 
+[![Build Status](https://travis-ci.org/freeletics/RxRedux.svg?branch=master)](https://travis-ci.org/freeletics/RxRedux)
+
 ## Dependency
 Dependencies are hosted on Maven Central:
 
