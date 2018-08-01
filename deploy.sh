@@ -24,8 +24,8 @@ else
   openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in freeletics.gpg.enc -out freeletics.gpg -d
   echo "signing.password=$PGP_KEY" >> library/gradle.properties
   echo "signing.secretKeyRingFile=$PWD/freeletics.gpg" >> library/gradle.properties
-  echo "org.gradle.parallel=false" >> library/gradle.properties
-  ./gradlew :library:uploadArchives
+
+  ./gradlew  --no-daemon :library:uploadArchives -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
   rm freeletics.gpg
   git reset --hard
   echo "Deployed!"
