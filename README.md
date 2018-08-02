@@ -2,7 +2,7 @@
 A Redux store implemtation entirely base on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
 that helps to isolate side effects.
 
-![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/RxRedux-in-a-nutshell.png)
+![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/rxredux.png)
 
 [![Build Status](https://travis-ci.org/freeletics/RxRedux.svg?branch=master)](https://travis-ci.org/freeletics/RxRedux)
 
