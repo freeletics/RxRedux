@@ -1,5 +1,5 @@
 # RxRedux
-A Redux store implemtation entirely base on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
+A Redux store implementation entirely based on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
 that helps to isolate side effects.
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/rxredux.png)
@@ -12,7 +12,7 @@ Dependencies are hosted on Maven Central:
 ```
 implementation 'com.freeletics.rxredux:rxredux:1.0.0'
 ```
-Keep in mind that this is library is written in kotlin which means you also add `kotlin-stdlib` to your project by using RxRedux.
+Keep in mind that this library is written in kotlin which means you also need to add `kotlin-stdlib` to a project using RxRedux.
 
 #### Snapshot
 Latest snapshot (directly published from master branch from Travis CI):
@@ -40,7 +40,7 @@ This library offers a custom RxJava operator `.reduxStore( initialState, sideEff
 
 # Redux Store
 A Store is basically an observable container for state. 
-This library provides a kotlin extension function to create `.  .reduxStore<State, Action>(initialState, sideEffects, reducer)` to create such a state container.
+This library provides a kotlin extension function `.reduxStore<State, Action>(initialState, sideEffects, reducer)` to create such a state container.
 It takes an `initialState` and a list of `SideEffect<State, Action>` and a `Reducer<State, Action>`
 
 # Action
@@ -59,12 +59,12 @@ If an `Action` is not changing the state at all by the `Reducer` (because it's h
 A Side Effect is a function of type `(Observable<Action>, StateAccessor<State>) -> Observable<Action>`.
 **So basically it's Actions in and Actions out.** 
 You can think of a `SideEffect` as a use case in clean architecture: It should do just one job.
-Every SideEffect can trigger multiple `Actions` (remember it returns `Observable<Action>`) which go through the `Reducer` but can also trigger other `SideEffects` registered for the corresponding `Action`.
-Also an `Action` can have a `payload`. For example if you load some data from backend you emit the loaded data as an `Action` like `data class DataLoadedAction (val data : FooData)`. 
+Every `SideEffect` can trigger multiple `Actions` (remember it returns `Observable<Action>`) which go through the `Reducer` but can also trigger other `SideEffects` registered for the corresponding `Action`.
+An `Action` can also have a `payload`. For example, if you load some data from backend, you emit the loaded data as an `Action` like `data class DataLoadedAction (val data : FooData)`. 
 The mantra an Action is a command to do something is still true: in that case it means data is loaded, do with it "something".
 
 # StateAccessor
-Whenever a `SideEffect` needs to know the current State it can use `StateAccessor` to grab the latest state from Redux Store. StateAccessor is basically just a function `() -> State` to grab the latest State anytime you need it.
+Whenever a `SideEffect` needs to know the current State it can use `StateAccessor` to grab the latest state from Redux Store. `StateAccessor` is basically just a function `() -> State` to grab the latest State anytime you need it.
 
 # Usage
 Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen. Plus one can 
@@ -142,31 +142,31 @@ actions
   .subscribe( state -> view.render(state) )
 ```
 
-The [following video](https://youtu.be/M7lx9Y9ANYo) (click on it) illustrate the workflow:
+The [following video](https://youtu.be/M7lx9Y9ANYo) (click on it) illustrates the workflow:
 
 [![RxRedux explanation](https://i.ytimg.com/vi/M7lx9Y9ANYo/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAqwunKP2_qGE0HYUlquWkFccM5MA)](https://youtu.be/M7lx9Y9ANYo)
 
 
 0. Let's take a look at the following illustration:
 The blue box is the `View` (think UI). 
-`Presenter` or `ViewModel` has not been drawn for the sake of readability but you can think of having such additional layers between View and Redux State Machine.
+The `Presenter` or `ViewModel` has not been drawn for the sake of readability but you can think of having such additional layers between View and Redux State Machine.
 The yellow box represents a `Store`. 
 The grey box is the `reducer`. 
 The pink box is a `SideEffect`
 Additionally, a green circle represents `State` and a red circle represents an `Action` (see next step).
 On the right you see a UI mock of a mobile app to illustrate UI changes.
 
-1. `NextPageAction` get triggered from the UI (by scrolling at the end of the list). Every `Action` goes through the `reducer` and all `SideEffects` registered for this type of Action.
+1. `NextPageAction` gets triggered from the UI (by scrolling at the end of the list). Every `Action` goes through the `reducer` and all `SideEffects` registered for this type of Action.
 
-2. `Reducer` is not interesting on `NextPageAction`. So while `NextPageAction` goes through the reducer, it doesn't change the state.
+2. `Reducer` is not interested in `NextPageAction`. So while `NextPageAction` goes through the reducer, it doesn't change the state.
 
-3. `loadNextPageSideEffect` (pink box), however, cares about `NextPageAction`. This is the trigger to run the side-effect
+3. `loadNextPageSideEffect` (pink box), however, cares about `NextPageAction`. This is the trigger to run the side-effect.
 
 4. So `loadNextPageSideEffect` takes `NextPageAction` and starts doing the job and makes the http request to load the next page from backend. Before doing that, this side effect starts with emitting `LoadPageAction`.
 
 5. `Reducer` takes `LoadPageAction` emitted from the side effect and reacts on it by "reducing the state". 
 This means `Reducer` knows how to react on `LoadPageAction` to compute the new state (showing progress indicator at the bottom of the list).
-Please note that the state has changed (highlighted in green) which results in also changing the UI (progress indicator at the end of the list).
+Please note that the state has changed (highlighted in green) which also results in changing the UI (progress indicator at the end of the list).
 
 6. Once `loadNextPageSideEffect` gets the result back from backend, the side effect emits a new `PageLoadedAction`.
 This Action contains a "payload" - the loaded data.
@@ -187,7 +187,7 @@ Also `SideEffects` can be invoked by `Actions` from other `SideEffects`.
 # FAQ
 
 ### I get a `StackoverflowException`
-This is a common pitfall and is most of the time caused by the fact that an `SideEffect` emits an `Action` as output that it also consumes from upstream leading to a infinite loop.
+This is a common pitfall and is most of the time caused by the fact that a `SideEffect` emits an `Action` as output that it also consumes from upstream leading to an infinite loop.
 
 ```kotlin
 
@@ -213,7 +213,7 @@ But since `SideEffect` reacts on that action `Int 1` too, it computes `1 * 2` an
 
 Since every Action runs through both `Reducer` and registered `SideEffects` this is a valid question.
 Technically speaking `Reducer` gets every `Action` from upstream before the registered `SideEffects`.
-The idea behind this is that a `Reducer` may change already the state before a `SideEffect` starts processing the action.
+The idea behind this is that a `Reducer` may have already changed the state before a `SideEffect` started processing the action.
 
 For example let's assume upstream only emits exactly one action (because then it's simpler to illustrate the sequence of workflow):
 
