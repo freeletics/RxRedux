@@ -8,3 +8,6 @@
 /build
 /captures
 .externalNativeBuild
+
+.idea
+*.thumbnails
