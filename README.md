@@ -60,7 +60,7 @@ A Side Effect is a function of type `(Observable<Action>, StateAccessor<State>) 
 **So basically it's Actions in and Actions out.** 
 You can think of a `SideEffect` as a use case in clean architecture: It should do just one job.
 Every SideEffect can trigger multiple `Actions` (remember it returns `Observable<Action>`) which go through the `Reducer` but can also trigger other `SideEffects` registered for the corresponding `Action`.
-Also a `Action` can have a `payload`. For example if you load some data from backend you emit the loaded data as a `Action` like `data class DataLoadedAction (val data : FooData)`. 
+Also an `Action` can have a `payload`. For example if you load some data from backend you emit the loaded data as an `Action` like `data class DataLoadedAction (val data : FooData)`. 
 The mantra an Action is a command to do something is still true: in that case it means data is loaded, do with it "something".
 
 # StateAccessor
