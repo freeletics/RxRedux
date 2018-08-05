@@ -21,6 +21,99 @@ which is handled by another internal SideEffect:
 of showing and hiding a `SnackBar` that is used to display an error on screen.
 
 
+## SideEffects
+As a user of this app scrolls to the end of the list, the next page of popular Github repositories is loaded.
+The real deal with `RxRedux` is `SideEffect` (Action in, Actions out) as we will try to highlight in the following example (source code is available on [Github](https://github.com/freeletics/RxRedux/tree/master/sample)).
+
+To set up our Redux Store with RxRedux we use `.reduxStore()`:
+
+```kotlin
+// Actions triggered by the user in the UI / View Layer
+val userActions : Observable<Action> = ...
+
+actionsFromUser
+  .observeOn(Schedulers.io())
+  .reduxStore(
+    initialState = State.LOADING,
+    sideEffects = listOf(::loadNextPageSideEffect, ::showAndHideErrorSnackbarSideEffect, ... ),
+    reducer = ::reducer
+  )
+  .distinctUntilChanged()
+  .subscribe { state -> view.render(state) }
+```
+
+For the sake of readability we just want to focus on two side effects in this blog post to highlight the how easy it is to compose (and reuse) functionality via `SideEffects` in `RxRedux` (but you can check the full sample code on [Github](https://github.com/freeletics/RxRedux/tree/master/sample))
+
+
+```kotlin
+fun loadNextPageSideEffect(actions : Observable<Action>, state : StateAccessor) : Observable<Action> =
+  actions
+    .ofType(LoadNextPageAction::class.java)
+    .switchMap {
+      val currentState : State = state()
+      val nextPage : Int = currentState.page + 1
+
+      githubApi.loadNextPage(nextPage)
+        .map { repositoryList ->
+          PageLoadedAction(repositoryList, nextPage) // Action with the loaded items as "payload"
+        }
+        .startWith( StartLoadingNextPageAction )
+        .onErrorReturn { error -> ErrorLoadingPageAction(error) }
+    }
+```
+
+Let's recap what `loadeNextPageSideEffect()` does:
+
+ 1. This `SideEffect` only triggers on `LoadNextPageAction` (emitted in `actionsFromUser`)
+ 2. Before making the http request this SideEffect emits a `StartLoadingNextPageAction`. This action runs through the `Reducer` and the output is a new State that causes the UI to display a loading indicator at the end of the list.
+ 3. Once the http request completes `PageLoadedAction` is emitted and processed by the `Reducer` as well to compute the new state. In other words: the loading indicator is hidden and the loaded data is added to the list of Github repositories displayed on the screen.
+ 4. If an error occures while making the http request, we catch it an emit a `ErrorLoadingPageAction`. We will see in a minute how we process this action (spoiler: with another SideEffect).
+
+The state transitions (for the happy path - no http networking error) are reflected in the UI as follows:
+
+![RxRedux](https://raw.githubusercontent.com/freeletics/RxRedux/master/sample/docs/sideeffect1-ui.png)
+
+
+So let's talk how to handle the http networking error case.
+In `RxRedux` a `SideEffect` emits `Actions`.
+These Actions go through the Reducer but are alse piped back into the system.
+That allows other `SideEffect` to react on `Actions` emitted by a `SideEffect`.
+We do exactly that to show and hide a `Snackbar` in case that loading the next page fails.
+Remember: `loadNextPageSideEffect` emits a `ErrorLoadingPageAction`.
+
+```kotlin
+fun showAndHideErrorSnackbarSideEffect(actions : Observable<Action>, state : StateAccessor) : Observable<Action> =
+  actions
+    .ofType(ErrorLoadingPageAction::class.java) // <-- HERE
+    .switchMap { action ->
+        Observable.timer(3, TimeUnit.SECONDS)
+          .map { HideLoadNextPageErrorAction(action.error) }
+          .startWith( ShowLoadNextPageErrorAction(action.error) )
+    }
+```
+
+What `showAndHideErrorSnackbarSideEffect()` does is the following:
+
+1. This side effect only triggers on `ErrorLoadingPageAction`
+2. We show a Snackbar for 3 seconds on the screen by using `Observable.timer(3, SECONDS)`. We do that by emitting `ShowLoadNextPageErrorAction` first. `Reducer`will then change the state to show Snackbar.
+3. After 3 seconds we emit `HideLoadNextPageErrorActionHideLoadNextPageErrorAction`. Again, the reducer takes care to compute new state that causes the UI to hide the Snackbar.
+
+![RxRedux](https://raw.githubusercontent.com/freeletics/RxRedux/master/sample/docs/sideeffect2-ui.png)
+
+Confused? Here is a (pseudo) sequence diagram that illustrates how action flows from SideEffect to other SideEffects and the Reducer:
+
+![RxRedux](https://raw.githubusercontent.com/freeletics/RxRedux/master/sample/docs/pagination-sequence.png)
+
+Please note that every Action goes through the `Reducer` first.
+This is an explicit design choice to allow the `Reducer` to change state before `SideEffects` start.
+If Reducer doesn't really care about an action (i.e. `ErrorLoadingPageAction`) Reducer just returns the previous State.
+
+Of course one could say "why do you need this overhead just to display a Snackbar"?
+The reason is that now this is testable.
+Moreover, `showAndHideErrorSnackbarSideEffect()` can be reused.
+For Example: If you add a new functionality like loading data from database, error handling is just emitting an Action and `showAndHideErrorSnackbarSideEffect()` will do the magic for you.
+With `SideEffects` you can create a plugin system.
+
 # Testing
 Testing is fairly easy in a state machine based architecure because all you have to do trigger
 input actions and then check for state changes caused by an action.

@@ -67,7 +67,9 @@ The mantra an Action is a command to do something is still true: in that case it
 Whenever a `SideEffect` needs to know the current State it can use `StateAccessor` to grab the latest state from Redux Store. StateAccessor is basically just a function `() -> State` to grab the latest State anytime you need it.
 
 # Usage
-Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen. Plus one can 
+Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen.
+**For a complete example check [the sample application incl. README](https://github.com/freeletics/RxRedux/master/sample)**
+but for the sake of simplicity let's stick with this simple "list of persons example":
 
 ``` kotlin
 data class State {
@@ -183,6 +185,9 @@ This system allows you to create a plugin in system of `SideEffects` that are hi
 ![Step12](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/step13.png)
 
 Also `SideEffects` can be invoked by `Actions` from other `SideEffects`.
+
+
+**For a complete example check [the sample application incl. README](https://github.com/freeletics/RxRedux/master/sample)**
 
 # FAQ
 
