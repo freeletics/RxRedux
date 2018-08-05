@@ -1,6 +1,6 @@
 # RxRedux
 A Redux store implementation entirely based on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
-that helps to isolate side effects. RxRedux is a replacement for RxJava's `.scan()` operator. 
+that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJava's `.scan()` operator. 
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/rxredux.png)
 
