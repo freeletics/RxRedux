@@ -120,7 +120,7 @@ fun loadNextPageSideEffect (actions : Observable<Action>, state: StateAccessor<S
 
 ```kotlin
 // Reducer is just a typealias for a function
-fun reducer(state : Statine, action : Action) : State =
+fun reducer(state : State, action : Action) : State =
   when(action) {
     is LoadPageAction -> state.copy (loadingNextPage = true)
     is ErrorLoadingNextPageAction -> state.copy( loadingNextPage = false, errorLoadingNextPage = action.error)
