@@ -11,8 +11,9 @@ import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
+import javax.inject.Inject
 
-class PopularRepositoriesViewModel(
+class PopularRepositoriesViewModel @Inject constructor(
     paginationStateMachine: PaginationStateMachine,
     androidScheduler : Scheduler
 ) : ViewModel() {
