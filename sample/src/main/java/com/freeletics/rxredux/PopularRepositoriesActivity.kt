@@ -57,10 +57,7 @@ class PopularRepositoriesActivity : AppCompatActivity() {
                 .subscribe(viewModel.input)
         )
 
-        disposables.add(
-            Observable.just(Action.LoadFirstPageAction)
-                .subscribe(viewModel.input)
-        )
+        viewModel.input.accept(Action.LoadFirstPageAction)
 
         disposables.add(
             viewBinding.retryLoadFirstPage
