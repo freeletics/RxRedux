@@ -60,7 +60,7 @@ private data class Given(
                 val states = stateRecorder.renderedStates()
                     .take(allCapturedStatesSoFar.size + 1L)
                     .toList()
-                    .timeout(10, TimeUnit.SECONDS)
+                    .timeout(30, TimeUnit.SECONDS)
                     .blockingGet()
 
                 val expectedStates = allCapturedStatesSoFar + expectedState

@@ -10,6 +10,7 @@ import com.facebook.testing.screenshot.Screenshot
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.subjects.Subject
 import timber.log.Timber
+import tools.fastlane.screengrab.Screengrab
 import java.util.*
 
 
@@ -65,8 +66,10 @@ class QueueingScreenshotTaker(
                 topOfQueue.waitingState = WaitingState.WAITING_FOR_SCREENSHOT
                 handler.postDelayed({
                     val (state, _) = queue.poll()
-                    Screenshot.snapActivity(activity).setName("PopularRepositoriesActivity State ${screenshotCounter++}")
+                    val screenshotName = "PopularRepositoriesActivity_State_${screenshotCounter++}"
+                    Screenshot.snapActivity(activity).setName(screenshotName)
                         .record()
+                    Screengrab.screenshot("Screengrab_$screenshotName")
                     Timber.d("Drawn $state. Screenshot taken. Queue $queue")
                     subject.onNext(state)
                     dispatchNextWaitingStateIfNothingWaitedToBeDrawn()
