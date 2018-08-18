@@ -1,6 +1,6 @@
 # RxRedux
 A Redux store implementation entirely based on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
-that helps to isolate side effects.
+that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJava's `.scan()` operator. 
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/rxredux.png)
 
@@ -120,7 +120,7 @@ fun loadNextPageSideEffect (actions : Observable<Action>, state: StateAccessor<S
 
 ```kotlin
 // Reducer is just a typealias for a function
-fun reducer(state : Statine, action : Action) : State =
+fun reducer(state : State, action : Action) : State =
   when(action) {
     is LoadPageAction -> state.copy (loadingNextPage = true)
     is ErrorLoadingNextPageAction -> state.copy( loadingNextPage = false, errorLoadingNextPage = action.error)
