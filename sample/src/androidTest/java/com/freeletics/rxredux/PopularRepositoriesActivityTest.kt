@@ -36,7 +36,7 @@ class PopularRepositoriesActivityTest {
         // Setup test environment
         PopularRepositoriesSpec(
             screen = AndroidScreen(activityTestRule),
-            stateRecorder = AndroidStateRecorder(),
+            stateHistory = StateHistory(AndroidStateRecorder()),
             config = ScreenConfig(mockWebServer = MockWebServer().setupForHttps())
         ).runTests()
     }
