@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.freeletics.rxredux.businesslogic.pagination.Action
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
+import com.freeletics.rxredux.di.AndroidScheduler
 import com.jakewharton.rxrelay2.PublishRelay
 import com.jakewharton.rxrelay2.Relay
 import io.reactivex.Scheduler
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 class PopularRepositoriesViewModel @Inject constructor(
     paginationStateMachine: PaginationStateMachine,
-    androidScheduler : Scheduler
+    @AndroidScheduler androidScheduler : Scheduler
 ) : ViewModel() {
 
     private val inputRelay: Relay<Action> = PublishRelay.create()
