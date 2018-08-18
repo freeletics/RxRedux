@@ -143,26 +143,33 @@ class PopularRepositoriesSpec(
     }
 
     fun runTests() {
-        given("the Repositories List Screen") {
+        val server = config.mockWebServer
+        val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
 
-            val server = config.mockWebServer
-            val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
+        given("the device is offline") {
 
-            on("device is offline") {
+            server.shutdown()
 
-                server.shutdown()
+            on("loading first page") {
+
                 screen.loadFirstPage()
+
                 "shows loading first page" byRendering PaginationStateMachine.State.LoadingFirstPageState
+
                 "shows error loading first page" byRendering
                         PaginationStateMachine.State.ErrorLoadingFirstPageState(
                             connectionErrorMessage
                         )
             }
+        }
 
-            on("device is online again and user clicks retry loading first page") {
+        given("device is online again (was offline before)") {
 
-                server.enqueue200(FIRST_PAGE)
-                server.start(MOCK_WEB_SERVER_PORT)
+            server.enqueue200(FIRST_PAGE)
+            server.enqueue200(SECOND_PAGE)
+            server.start(MOCK_WEB_SERVER_PORT)
+
+            on("user clicks retry loading first page") {
 
                 screen.retryLoadingFirstPage()
 
@@ -172,13 +179,12 @@ class PopularRepositoriesSpec(
                     items = FIRST_PAGE,
                     page = 1
                 )
-
             }
 
             on("scrolling to the end of the first page") {
 
-                server.enqueue200(SECOND_PAGE)
                 screen.scrollToEndOfList()
+
                 "shows loading next page" byRendering
                         PaginationStateMachine.State.ShowContentAndLoadNextPageState(
                             items = FIRST_PAGE,
@@ -192,9 +198,14 @@ class PopularRepositoriesSpec(
                         )
             }
 
-            on("device is offline again and scrolling to end of second page") {
+        }
 
-                server.shutdown()
+        given("device is offline again (was online before)") {
+
+            server.shutdown()
+
+            on("scrolling to end of second page") {
+
                 screen.scrollToEndOfList()
 
                 "shows loading next page" byRendering
