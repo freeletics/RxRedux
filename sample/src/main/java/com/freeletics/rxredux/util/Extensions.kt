@@ -8,6 +8,3 @@ import android.support.v4.app.FragmentActivity
 
 inline fun <reified T : ViewModel> FragmentActivity.viewModel(factory: ViewModelProvider.Factory)
     = ViewModelProviders.of(this, factory)[T::class.java]
-
-inline fun <reified T : ViewModel> Fragment.viewModel(factory: ViewModelProvider.Factory)
-    = ViewModelProviders.of(this, factory)[T::class.java]
