@@ -58,6 +58,7 @@ class StateHistory(private val stateRecorder: StateRecorder) {
             .take(stateHistory.size + 1L)
             .toList()
             .timeout(1, TimeUnit.MINUTES)
+            .doOnError { it.printStackTrace() }
             .blockingGet()
 
         val history = stateHistory
@@ -166,8 +167,9 @@ class PopularRepositoriesSpec(
         given("device is online (was offline before)") {
 
             server.enqueue200(FIRST_PAGE)
-            server.enqueue200(SECOND_PAGE)
             server.start(MOCK_WEB_SERVER_PORT)
+
+            Thread.sleep(5000)
 
             on("user clicks retry loading first page") {
 
@@ -180,6 +182,8 @@ class PopularRepositoriesSpec(
                     page = 1
                 )
             }
+
+            server.enqueue200(SECOND_PAGE)
 
             on("scrolling to the end of the first page") {
 
