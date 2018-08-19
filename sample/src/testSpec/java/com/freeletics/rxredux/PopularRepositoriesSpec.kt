@@ -57,7 +57,7 @@ class StateHistory(private val stateRecorder: StateRecorder) {
         val recordedStates = stateRecorder.renderedStates()
             .take(stateHistory.size + 1L)
             .toList()
-            .timeout(30, TimeUnit.SECONDS)
+            .timeout(1, TimeUnit.MINUTES)
             .blockingGet()
 
         val history = stateHistory
@@ -163,7 +163,7 @@ class PopularRepositoriesSpec(
             }
         }
 
-        given("device is online again (was offline before)") {
+        given("device is online (was offline before)") {
 
             server.enqueue200(FIRST_PAGE)
             server.enqueue200(SECOND_PAGE)
