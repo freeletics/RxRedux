@@ -65,7 +65,8 @@ class PopularRepositoriesJvmTest {
         val paginationStateMachine = applicationComponent
             .paginationStateMachine()
 
-        val viewModel = PopularRepositoriesViewModel(paginationStateMachine, Schedulers.trampoline())
+        val viewModel =
+            PopularRepositoriesViewModel(paginationStateMachine, Schedulers.trampoline())
         val screen = JvmScreen(viewModel)
         viewModel.state.observeForever {
             screen.stateSubject.onNext(it!!)
@@ -77,7 +78,7 @@ class PopularRepositoriesJvmTest {
             PopularRepositoriesSpec(
                 config = ScreenConfig(it),
                 screen = screen,
-                stateRecorder = screen
+                stateHistory = StateHistory(screen)
             ).runTests()
         }
     }

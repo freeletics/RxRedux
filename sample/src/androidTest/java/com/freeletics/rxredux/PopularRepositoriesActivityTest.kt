@@ -16,10 +16,15 @@ import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import io.reactivex.Observable
+import io.victoralbertos.device_animation_test_rule.DeviceAnimationTestRule
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import tools.fastlane.screengrab.Screengrab
+import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
+import tools.fastlane.screengrab.locale.LocaleTestRule
 
 
 @RunWith(AndroidJUnit4::class)
@@ -31,12 +36,24 @@ class PopularRepositoriesActivityTest {
     @get:Rule
     val permission = GrantPermissionRule.grant(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
+    companion object {
+        @get:ClassRule
+        @JvmStatic
+        val localeTestRule = LocaleTestRule()
+
+        @get:ClassRule
+        @JvmStatic
+        var deviceAnimationTestRule = DeviceAnimationTestRule()
+    }
+
     @Test
     fun runTests() {
         // Setup test environment
+        Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
+
         PopularRepositoriesSpec(
             screen = AndroidScreen(activityTestRule),
-            stateRecorder = AndroidStateRecorder(),
+            stateHistory = StateHistory(AndroidStateRecorder()),
             config = ScreenConfig(mockWebServer = MockWebServer().setupForHttps())
         ).runTests()
     }

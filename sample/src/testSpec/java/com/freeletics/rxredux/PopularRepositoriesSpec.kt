@@ -30,7 +30,7 @@ interface Screen {
 }
 
 /**
- * Can record states over time. This states are basically just rendered on the screen
+ * Can record states over time.
  */
 interface StateRecorder {
     /**
@@ -39,46 +39,83 @@ interface StateRecorder {
     fun renderedStates(): Observable<PaginationStateMachine.State>
 }
 
-
-private data class Given(
-    private val screen: Screen,
-    private val stateRecorder: StateRecorder,
-    private val composedMessage: String
-) {
+/**
+ * Keep the whole history of all states over time
+ */
+class StateHistory(private val stateRecorder: StateRecorder) {
 
     /**
      * All states that has been captured and asserted in an `on`cl
      */
-    private var allCapturedStatesSoFar: List<PaginationStateMachine.State> = emptyList()
+    private var stateHistory: List<PaginationStateMachine.State> = emptyList()
+
+    /**
+     * Waits until the next state is rendered and then retruns a [StateHistorySnapshot]
+     * or if a timeout happens then a TimeOutException will be thrown
+     */
+    internal fun waitUntilNextRenderedState(): StateHistorySnapshot {
+        val recordedStates = stateRecorder.renderedStates()
+            .take(stateHistory.size + 1L)
+            .toList()
+            .timeout(1, TimeUnit.MINUTES)
+            .doOnError { it.printStackTrace() }
+            .blockingGet()
+
+        val history = stateHistory
+        stateHistory = recordedStates
+
+        return StateHistorySnapshot(
+            actualRecordedStates = recordedStates,
+            verifiedHistory = history
+        )
+    }
+
+    /**
+     * A Snapshot in time
+     */
+    internal data class StateHistorySnapshot(
+        /**
+         * The actual full recorded history of states
+         */
+        val actualRecordedStates: List<PaginationStateMachine.State>,
+
+        /**
+         * full history of all states that we have already verified / validated and
+         * are sure that this list of states is correct
+         */
+        val verifiedHistory: List<PaginationStateMachine.State>
+    )
+}
+
+
+private data class Given(
+    private val screen: Screen,
+    private val stateHistory: StateHistory,
+    private val composedMessage: String
+) {
 
     inner class On(private val composedMessage: String) {
 
         inner class It(private val composedMessage: String) {
 
-            fun renderedState(expectedState: PaginationStateMachine.State) {
+            internal fun assertStateRendered(expectedState: PaginationStateMachine.State) {
 
-                val states = stateRecorder.renderedStates()
-                    .take(allCapturedStatesSoFar.size + 1L)
-                    .toList()
-                    .timeout(10, TimeUnit.SECONDS)
-                    .blockingGet()
-
-                val expectedStates = allCapturedStatesSoFar + expectedState
-
+                val (recordedStates, verifiedHistory) = stateHistory.waitUntilNextRenderedState()
+                val expectedStates = verifiedHistory + expectedState
                 Assert.assertEquals(
                     composedMessage,
                     expectedStates,
-                    states
+                    recordedStates
                 )
-                allCapturedStatesSoFar = states
                 Timber.d("✅ $composedMessage")
 
             }
         }
 
-        fun it(message: String, expectedState: PaginationStateMachine.State) {
+        infix fun String.byRendering(expectedState: PaginationStateMachine.State) {
+            val message = this
             val it = It("$composedMessage *IT* $message")
-            it.renderedState(expectedState)
+            it.assertStateRendered(expectedState)
         }
     }
 
@@ -97,100 +134,103 @@ data class ScreenConfig(
 
 class PopularRepositoriesSpec(
     private val screen: Screen,
-    private val stateRecorder: StateRecorder,
+    private val stateHistory: StateHistory,
     private val config: ScreenConfig
 ) {
 
     private fun given(message: String, block: Given.() -> Unit) {
-        val given = Given(screen, stateRecorder, message)
+        val given = Given(screen, stateHistory, message)
         given.block()
     }
 
     fun runTests() {
-        given("the Repositories List Screen") {
+        val server = config.mockWebServer
+        val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
 
-            val server = config.mockWebServer
-            val connectionErrorMessage = "Failed to connect to /127.0.0.1:$MOCK_WEB_SERVER_PORT"
+        given("the device is offline") {
 
-            on("device is offline") {
+            server.shutdown()
 
-                server.shutdown()
+            on("loading first page") {
+
                 screen.loadFirstPage()
-                it("shows loading first page", PaginationStateMachine.State.LoadingFirstPageState)
-                it(
-                    "shows error loading first page",
-                    PaginationStateMachine.State.ErrorLoadingFirstPageState(connectionErrorMessage)
-                )
+
+                "shows loading first page" byRendering PaginationStateMachine.State.LoadingFirstPageState
+
+                "shows error loading first page" byRendering
+                        PaginationStateMachine.State.ErrorLoadingFirstPageState(
+                            connectionErrorMessage
+                        )
             }
+        }
 
-            on("device is online again and user clicks retry loading first page") {
+        given("device is online (was offline before)") {
 
-                server.enqueue200(FIRST_PAGE)
-                server.start(MOCK_WEB_SERVER_PORT)
+            server.enqueue200(FIRST_PAGE)
+            server.start(MOCK_WEB_SERVER_PORT)
+
+            Thread.sleep(5000)
+
+            on("user clicks retry loading first page") {
 
                 screen.retryLoadingFirstPage()
 
-                it("shows loading", PaginationStateMachine.State.LoadingFirstPageState)
+                "shows loading" byRendering PaginationStateMachine.State.LoadingFirstPageState
 
-                it(
-                    "shows first page", PaginationStateMachine.State.ShowContentState(
-                        items = FIRST_PAGE,
-                        page = 1
-                    )
+                "shows first page" byRendering PaginationStateMachine.State.ShowContentState(
+                    items = FIRST_PAGE,
+                    page = 1
                 )
             }
+
+            server.enqueue200(SECOND_PAGE)
 
             on("scrolling to the end of the first page") {
 
-                server.enqueue200(SECOND_PAGE)
                 screen.scrollToEndOfList()
 
-                it(
-                    "shows loading next page",
-                    PaginationStateMachine.State.ShowContentAndLoadNextPageState(
-                        items = FIRST_PAGE,
-                        page = 1
-                    )
-                )
+                "shows loading next page" byRendering
+                        PaginationStateMachine.State.ShowContentAndLoadNextPageState(
+                            items = FIRST_PAGE,
+                            page = 1
+                        )
 
-                it(
-                    "shows next page content",
-                    PaginationStateMachine.State.ShowContentState(
-                        items = FIRST_PAGE + SECOND_PAGE,
-                        page = 2
-                    )
-                )
+                "shows next page content" byRendering
+                        PaginationStateMachine.State.ShowContentState(
+                            items = FIRST_PAGE + SECOND_PAGE,
+                            page = 2
+                        )
             }
 
-            on("device is offline again and scrolling to end of second page") {
+        }
 
-                server.shutdown()
+        given("device is offline again (was online before)") {
+
+            server.shutdown()
+
+            on("scrolling to end of second page") {
+
                 screen.scrollToEndOfList()
 
-                it(
-                    "shows loading next page",
-                    PaginationStateMachine.State.ShowContentAndLoadNextPageState(
-                        items = FIRST_PAGE + SECOND_PAGE,
-                        page = 2
-                    )
-                )
+                "shows loading next page" byRendering
+                        PaginationStateMachine.State.ShowContentAndLoadNextPageState(
+                            items = FIRST_PAGE + SECOND_PAGE,
+                            page = 2
+                        )
 
-                it(
-                    "shows error info for few seconds on top of the list of items",
-                    PaginationStateMachine.State.ShowContentAndLoadNextPageErrorState(
-                        items = FIRST_PAGE + SECOND_PAGE,
-                        page = 2,
-                        errorMessage = connectionErrorMessage
-                    )
-                )
+                "shows error info for few seconds on top of the list of items" byRendering
+                        PaginationStateMachine.State.ShowContentAndLoadNextPageErrorState(
+                            items = FIRST_PAGE + SECOND_PAGE,
+                            page = 2,
+                            errorMessage = connectionErrorMessage
+                        )
 
-                it(
-                    "hides error information and shows items only",
-                    PaginationStateMachine.State.ShowContentState(
-                        items = FIRST_PAGE + SECOND_PAGE,
-                        page = 2
-                    )
-                )
+                "hides error information and shows items only" byRendering
+                        PaginationStateMachine.State.ShowContentState(
+                            items = FIRST_PAGE + SECOND_PAGE,
+                            page = 2
+
+                        )
             }
         }
     }
