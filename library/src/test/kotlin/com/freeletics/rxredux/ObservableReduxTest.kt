@@ -121,4 +121,35 @@ class ObservableReduxTest {
         Assert.assertNull(outputedError)
         Assert.assertFalse(outputCompleted)
     }
+
+    @Test
+    fun `SideEffect that returns no Action is supported`() {
+
+        fun returnNoActionEffect(
+            actions: Observable<String>,
+            accessor: StateAccessor<String>
+        ): Observable<String> = actions.flatMap {
+            println("Doing something with $it")
+            Observable.empty<String>()
+        }
+
+
+        val action1 = "Action1"
+        val action2 = "Action2"
+        val action3 = "Action3"
+        val initial = "Initial"
+
+        Observable.just(action1, action2, action3)
+            .reduxStore("Initial", sideEffects = listOf(::returnNoActionEffect)) { state, action ->
+                state + action
+            }
+            .test()
+            .assertValues(
+                initial,
+                initial + action1,
+                initial + action1 + action2,
+                initial + action1 + action2 + action3
+            )
+            .assertNoErrors()
+    }
 }

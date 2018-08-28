@@ -214,13 +214,13 @@ inputActions
 The problem is that from upstream we get `Int 1`.
 But since `SideEffect` reacts on that action `Int 1` too, it computes `1 * 2` and emits `2`, which then again gets handled by the same SideEffect ` 2 * 2 = 4` and emits `4`, which then again gets handled by the same SideEffect `4 * 2 = 8` and emits `8`, which then getst handled by the same SideEffect and so on (endless loop) ...
 
-### Who processes an `Action` from upstream first: `Reducer` or `SideEffect`?
+### Who processes an `Action` first: `Reducer` or `SideEffect`?
 
 Since every Action runs through both `Reducer` and registered `SideEffects` this is a valid question.
 Technically speaking `Reducer` gets every `Action` from upstream before the registered `SideEffects`.
-The idea behind this is that a `Reducer` may have already changed the state before a `SideEffect` started processing the action.
+The idea behind this is that a `Reducer` may have already changed the state before a `SideEffect` start processing the Action.
 
-For example let's assume upstream only emits exactly one action (because then it's simpler to illustrate the sequence of workflow):
+For example let's assume upstream only emits exactly one Action (because then it's simpler to illustrate the sequence of workflow):
 
 ```kotlin
 // 1. upstream emits events
@@ -312,4 +312,19 @@ actions
     .reduxStore( ... )
     .distinctUntilChanged()
     .subscribe { state -> view.render(state) }
+```
+
+### What if I would like to have a SideEffect that returns no Action?
+
+For example, let's say you just store something in a database but you don't need a Action as result
+piped backed to your redux store. In that case you can simple use `Observable.empty()` like this:
+
+
+```
+fun saveToDatabaseSideEffect(actions : Observable<Action>, stateAccessor : StateAccessor<State>) {
+    return actions.flatmap {
+        saveToDb(...)
+        Observable.empty<Action>()  // just return this to not emit a Action
+    }
+}
 ```
