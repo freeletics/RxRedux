@@ -152,4 +152,18 @@ class ObservableReduxTest {
             )
             .assertNoErrors()
     }
+
+    @Test
+    fun `exception in reducer enhanced with state and action`() {
+        val testException = Exception("test")
+
+        Observable
+                .just("Action1")
+                .reduxStore("Initial", sideEffects = emptyList()) { _, _ ->
+                    throw testException
+                }
+                .test()
+                .assertError(ReducerException::class.java)
+                .assertErrorMessage("Exception was thrown by reducer, state = 'Initial', action = 'Action1'")
+    }
 }
