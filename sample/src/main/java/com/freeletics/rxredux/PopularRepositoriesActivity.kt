@@ -8,26 +8,20 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.freeletics.rxredux.businesslogic.pagination.Action
-import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import com.freeletics.rxredux.di.AndroidScheduler
-import io.reactivex.Observable
-import io.reactivex.Scheduler
+import com.freeletics.rxredux.util.viewModel
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
+import javax.inject.Provider
 
 class PopularRepositoriesActivity : AppCompatActivity() {
 
-    class MainViewModelFactory @Inject constructor(
-        private val paginationStateMachine: PaginationStateMachine,
-        @AndroidScheduler private val scheduler: Scheduler
-    ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            PopularRepositoriesViewModel(paginationStateMachine, scheduler) as T
-    }
-
     @Inject
-    lateinit var viewModelFactory: MainViewModelFactory
+    lateinit var viewModelProvider: Provider<PopularRepositoriesViewModel>
+
+    private val viewModel by lazy {
+        viewModel<PopularRepositoriesViewModel>(SimpleViewModelProviderFactory(viewModelProvider))
+    }
 
     @Inject
     lateinit var viewBindingFactory: ViewBindingFactory
@@ -46,7 +40,6 @@ class PopularRepositoriesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         applicationComponent.inject(this)
 
-        val viewModel = ViewModelProviders.of(this, viewModelFactory)[PopularRepositoriesViewModel::class.java]
         viewModel.state.observe(this, Observer {
             viewBinding.render(it!!)
         })
@@ -57,10 +50,7 @@ class PopularRepositoriesActivity : AppCompatActivity() {
                 .subscribe(viewModel.input)
         )
 
-        disposables.add(
-            Observable.just(Action.LoadFirstPageAction)
-                .subscribe(viewModel.input)
-        )
+        viewModel.input.accept(Action.LoadFirstPageAction)
 
         disposables.add(
             viewBinding.retryLoadFirstPage
