@@ -226,13 +226,13 @@ For example let's assume upstream only emits exactly one Action (because then it
 // 1. upstream emits events
 val upstreamActions = Observable.just( SomeAction() )
 
-val sideEffect1: SideEffect<Action, Action> = { actions, state ->
+val sideEffect1: SideEffect<Action, State> = { actions, state ->
     // 3. Runs because of SomeAction
     actions.filter { it is SomeAction }.map { OtherAction() }
 }
 
-val sideEffect2: SideEffect<Action, Action> ={ actions, state ->
-    // 5. This runs second because of OtherAction
+val sideEffect2: SideEffect<Action, State> ={ actions, state ->
+    // 5. Runs because of OtherAction
     actions.filter { it is OtherAction }.map { YetAnotherAction() }
 }
 
@@ -245,7 +245,7 @@ upstreamActions
         ...
         // 4. This runs again because of OtherAction (emitted by SideEffect1)
         ...
-        // 5. This runs again because of YetAnotherAction emitted from SideEffect2)
+        // 6. This runs again because of YetAnotherAction emitted from SideEffect2)
     }.subscribe( ... )
 ```
 
@@ -290,7 +290,7 @@ upstreamActions
     .subscribe( ... )
 ```
 
-The same thing is valid for Reducer. Reducer is just a type alias for a function `(State, Action) -> State`
+The same is valid for Reducer. Reducer is just a type alias for a function `(State, Action) -> State`
 You can define your reducer as lambda or function:
 
 ```kotlin
@@ -319,12 +319,11 @@ actions
 For example, let's say you just store something in a database but you don't need a Action as result
 piped backed to your redux store. In that case you can simple use `Observable.empty()` like this:
 
-
 ```
 fun saveToDatabaseSideEffect(actions : Observable<Action>, stateAccessor : StateAccessor<State>) {
     return actions.flatmap {
         saveToDb(...)
-        Observable.empty<Action>()  // just return this to not emit a Action
+        Observable.empty<Action>()  // just return this to not emit an Action
     }
 }
 ```
