@@ -142,3 +142,14 @@ This runs the test and compares the screenshots with the previously recored scre
 
 Please keep in mind that you always have to use the same device to run your screenshot test.
 The screenshots added to this repository have been taken from a Nexus 5X emulator (default settings) running Android API 26.
+
+### Language Localization
+We can go one step further and create screenshots for each language we support in our app.
+We use [fastlane](https://fastlane.tools) for that. From command line run
+
+```
+fastlane screengrab
+```
+
+You can see the generated report in `fastlane/metadata/android/screeshots.html`.
+This report can be used to do localization QA.
