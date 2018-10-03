@@ -27,6 +27,7 @@ else
   echo "org.gradle.configureondemand=false" >> gradle.properties
   gpg --import freeletics.gpg
 
+  ./gradlew --stop
   ./gradlew  --no-daemon :library:uploadArchives -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
   rm freeletics.gpg
   git reset --hard
