@@ -28,7 +28,7 @@ import io.reactivex.subjects.Subject
  * @param S The type of the State
  * @param A The type of the Actions
  */
-fun <S, A> Observable<A>.reduxStore(
+fun <S: Any, A: Any> Observable<A>.reduxStore(
     initialState: S,
     sideEffects: List<SideEffect<S, A>>,
     reducer: Reducer<S, A>
@@ -49,7 +49,7 @@ fun <S, A> Observable<A>.reduxStore(
  *
  * @see reduxStore
  */
-fun <S, A> Observable<A>.reduxStore(
+fun <S: Any, A: Any> Observable<A>.reduxStore(
     initialState: S,
     vararg sideEffects: SideEffect<S, A>,
     reducer: Reducer<S, A>
@@ -66,7 +66,7 @@ fun <S, A> Observable<A>.reduxStore(
  * @param A The type of the Actions
  * @see [Observable.reduxStore]
  */
-private class ObservableReduxStore<S, A>(
+private class ObservableReduxStore<S: Any, A: Any>(
     /**
      * The initial state. This one will be emitted directly in onSubscribe()
      */
@@ -138,7 +138,7 @@ private class ObservableReduxStore<S, A>(
     /**
      * Simple observer for internal reduxStore
      */
-    private class ReduxStoreObserver<S, A>(
+    private class ReduxStoreObserver<S: Any, A: Any>(
         private val actualObserver: Observer<in S>,
         private val internalDisposables: CompositeDisposable,
         initialState: S,
@@ -165,7 +165,12 @@ private class ObservableReduxStore<S, A>(
         @Synchronized
         override fun onNextActually(t: A) {
             val currentState = currentState()
-            val newState = reducer(currentState, t)
+            val newState = try {
+                reducer(currentState, t)
+            } catch (error: Throwable) {
+                onError(ReducerException(state = currentState, action = t, cause = error))
+                return
+            }
             state = newState
             actualObserver.onNext(newState)
         }
