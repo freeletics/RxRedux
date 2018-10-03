@@ -23,6 +23,8 @@ else
   echo "Deploying ..."
   echo "signing.password=$PGP_KEY" >> library/gradle.properties
   echo "signing.secretKeyRingFile=$PWD/freeletics.gpg" >> library/gradle.properties
+  echo "org.gradle.parallel=false" >> gradle.properties
+  echo "org.gradle.configureondemand=false" >> gradle.properties
   gpg --import freeletics.gpg
 
   ./gradlew  --no-daemon :library:uploadArchives -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
