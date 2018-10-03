@@ -9,7 +9,7 @@ that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJav
 ## Dependency
 Dependencies are hosted on Maven Central:
 
-```
+```groovy
 implementation 'com.freeletics.rxredux:rxredux:1.0.0'
 ```
 Keep in mind that this library is written in kotlin which means you also need to add `kotlin-stdlib` to a project using RxRedux.
@@ -17,10 +17,11 @@ Keep in mind that this library is written in kotlin which means you also need to
 #### Snapshot
 Latest snapshot (directly published from master branch from Travis CI):
 
-```
+```groovy
 allprojects {
     repositories {
-        ...
+        // Your repositories.
+        // ...
         // Add url to snapshot repository
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -30,7 +31,7 @@ allprojects {
 
 ```
 
-```
+```groovy
 implementation 'com.freeletics.rxredux:rxredux:1.0.1-SNAPSHOT'
 ```
 
@@ -319,7 +320,7 @@ actions
 For example, let's say you just store something in a database but you don't need a Action as result
 piped backed to your redux store. In that case you can simple use `Observable.empty()` like this:
 
-```
+```kotlin
 fun saveToDatabaseSideEffect(actions : Observable<Action>, stateAccessor : StateAccessor<State>) {
     return actions.flatmap {
         saveToDb(...)
