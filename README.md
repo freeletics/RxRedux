@@ -192,7 +192,7 @@ Also `SideEffects` can be invoked by `Actions` from other `SideEffects`.
 
 # FAQ
 
-### I get a `StackoverflowException`
+## I get a `StackoverflowException`
 This is a common pitfall and is most of the time caused by the fact that a `SideEffect` emits an `Action` as output that it also consumes from upstream leading to an infinite loop.
 
 ```kotlin
@@ -215,7 +215,7 @@ inputActions
 The problem is that from upstream we get `Int 1`.
 But since `SideEffect` reacts on that action `Int 1` too, it computes `1 * 2` and emits `2`, which then again gets handled by the same SideEffect ` 2 * 2 = 4` and emits `4`, which then again gets handled by the same SideEffect `4 * 2 = 8` and emits `8`, which then getst handled by the same SideEffect and so on (endless loop) ...
 
-### Who processes an `Action` first: `Reducer` or `SideEffect`?
+## Who processes an `Action` first: `Reducer` or `SideEffect`?
 
 Since every Action runs through both `Reducer` and registered `SideEffects` this is a valid question.
 Technically speaking `Reducer` gets every `Action` from upstream before the registered `SideEffects`.
@@ -258,7 +258,7 @@ So the workflow is as follows:
 5. `SideEffect2` reacts on `OtherAction` and emits `YetAnotherAction`
 6. `reducer` processes `YetAnotherAction`
 
-### Can I use `val` and `fun` for `SideEffects` or `Reducer`?
+## Can I use `val` and `fun` for `SideEffects` or `Reducer`?
 
 Absolutely. `SideEffect` is just a type alias for a function `(actions: Observable<Action>, state: StateAccessor<State>) -> Observable<out Action>`.
 
@@ -304,7 +304,7 @@ fun reducer(state : State, action : Action) : State {
 }
 ```
 
-### Is `distinctUntilChanged` considered as best practice?
+## Is `distinctUntilChanged` considered as best practice?
 Yes it is because `.reduxStore(...)` is not taking care of only emitting state that has been changed
 compared to previous state.
 Therefore, `.distinctUntilChanged()` is considered as best practice.
@@ -315,7 +315,7 @@ actions
     .subscribe { state -> view.render(state) }
 ```
 
-### What if I would like to have a SideEffect that returns no Action?
+## What if I would like to have a SideEffect that returns no Action?
 
 For example, let's say you just store something in a database but you don't need a Action as result
 piped backed to your redux store. In that case you can simple use `Observable.empty()` like this:
@@ -327,4 +327,32 @@ fun saveToDatabaseSideEffect(actions : Observable<Action>, stateAccessor : State
         Observable.empty<Action>()  // just return this to not emit an Action
     }
 }
+```
+
+## How do I cancel ongoing `SideEffects` if a certain `Action` happens?
+
+Let's assume you have a simple `SideEffect` that is triggered by `Action1`. 
+Whenever `Action2` is emitted our `SideEffect` should stop. 
+In RxJava this is quite easy to do by using `.takeUntil()`
+
+```kotlin
+fun mySideEffect(actions : Observable<Action>, stateAccessor : StateAccessor<State>) = 
+    actions
+        .ofType(Action1::class.java)
+        .flatMap {
+            ...
+            doSomething()
+        }
+        .takeUntil(actions.ofType(Action2::class.java)) // Once Action2 triggers the whole SideEffect gets canceled.
+```
+
+## Do I need an Action to start observing data?
+Let's say you would like to start observing a database right from the start inside your Store.
+This sounds pretty much like as soon as you have subscribers to your Store and therefore you don't need a dedicated Action to start observing the database.
+
+```kotlin
+fun observeDatabaseSideEffect(_ : Observable<Action>, _ : StateAccessor<State>) : Observable<Action> =
+    database // please notice that we dont use Observable<Action> at all
+        .queryItems()
+        .map { items -> DatabaseLoadedAction(items) }
 ```
