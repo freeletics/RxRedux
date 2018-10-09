@@ -21,12 +21,12 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
   echo "Skipping  deployment: wrong branch. Expected '$BRANCH' but was '$TRAVIS_BRANCH'."
 else
   echo "Deploying ..."
+  openssl aes-256-cbc -K $encrypted_06b1e6b9a94a_key -iv $encrypted_06b1e6b9a94a_iv -in freeletics.gpg.enc -out freeletics.gpg -d
+  gpg --import freeletics.gpg
   echo "signing.password=$PGP_KEY" >> library/gradle.properties
   echo "signing.secretKeyRingFile=/home/travis/.gnupg/secring.gpg" >> library/gradle.properties
   echo "org.gradle.parallel=false" >> gradle.properties
   echo "org.gradle.configureondemand=false" >> gradle.properties
-  gpg --import freeletics.gpg
-
   ./gradlew --stop
   ./gradlew  --no-daemon :library:uploadArchives -Dorg.gradle.parallel=false -Dorg.gradle.configureondemand=false
   rm freeletics.gpg
