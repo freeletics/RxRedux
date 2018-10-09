@@ -10,7 +10,7 @@ that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJav
 Dependencies are hosted on Maven Central:
 
 ```groovy
-implementation 'com.freeletics.rxredux:rxredux:1.0.0'
+implementation 'com.freeletics.rxredux:rxredux:1.0.1'
 ```
 Keep in mind that this library is written in kotlin which means you also need to add `kotlin-stdlib` to a project using RxRedux.
 
@@ -32,7 +32,7 @@ allprojects {
 ```
 
 ```groovy
-implementation 'com.freeletics.rxredux:rxredux:1.0.1-SNAPSHOT'
+implementation 'com.freeletics.rxredux:rxredux:1.0.2-SNAPSHOT'
 ```
 
 ## How is this different from other Redux implementations like [Mobius](https://github.com/spotify/mobius)
