@@ -30,7 +30,7 @@ import io.reactivex.subjects.Subject
  */
 fun <S: Any, A: Any> Observable<A>.reduxStore(
     initialState: S,
-    sideEffects: List<SideEffect<S, A>>,
+    sideEffects: Iterable<SideEffect<S, A>>,
     reducer: Reducer<S, A>
 ): Observable<S> {
     return RxJavaPlugins.onAssembly(
@@ -77,10 +77,10 @@ private class ObservableReduxStore<S: Any, A: Any>(
     private val upstreamActionsObservable: Observable<A>,
 
     /**
-     * The list of all sideEffects. A [SideEffect] takes an action, does something meaningful and returns another action.
+     * The Iterable of all sideEffects. A [SideEffect] takes an action, does something meaningful and returns another action.
      * Every Action is handled by the [Reducer] to create a new State.
      */
-    private val sideEffects: List<SideEffect<S, A>>,
+    private val sideEffects: Iterable<SideEffect<S, A>>,
 
     /**
      * The Reducer. Takes the current state and an action and computes a new state.
