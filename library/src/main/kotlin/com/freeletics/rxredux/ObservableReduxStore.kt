@@ -106,7 +106,8 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
  */
 private class ObservableReduxStore<S : Any, A : Any>(
     /**
-     * The initial state. This one will be emitted directly in onSubscribe()
+     * The initial state. This one will be emitted directly in onSubscribe().
+     * The supplier is runs on the Scheduler that has been specified in .subscribeOn(MyScheduler).
      */
     private val initialStateSupplier: () -> S,
     /**

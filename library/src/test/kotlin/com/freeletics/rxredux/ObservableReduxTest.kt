@@ -1,7 +1,6 @@
 package com.freeletics.rxredux
 
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import org.junit.Assert
@@ -205,7 +204,15 @@ class ObservableReduxTest {
         Assert.assertEquals(2, initialStateCount.get())
         Assert.assertNotSame(testThread, initialStateSupplierCallingThread[0])
         Assert.assertNotSame(testThread, initialStateSupplierCallingThread[1])
-        Assert.assertTrue(initialStateSupplierCallingThread[0].toString().startsWith(ioSchedulerNamePrefix))
-        Assert.assertTrue(initialStateSupplierCallingThread[1].toString().startsWith(ioSchedulerNamePrefix))
+        Assert.assertTrue(
+            initialStateSupplierCallingThread[0]
+                .toString()
+                .startsWith(ioSchedulerNamePrefix)
+        )
+        Assert.assertTrue(
+            initialStateSupplierCallingThread[1]
+                .toString()
+                .startsWith(ioSchedulerNamePrefix)
+        )
     }
 }
