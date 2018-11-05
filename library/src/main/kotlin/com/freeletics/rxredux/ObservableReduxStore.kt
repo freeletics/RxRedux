@@ -22,20 +22,23 @@ import io.reactivex.subjects.Subject
  * side effect ([Throwable] has been thrown) then the ReduxStore reaches onError() as well and
  * according to the reactive stream specs the store cannot recover the error state.
  *
- * @param initialState The initial state. This one will be emitted directly in onSubscribe()
+ * @param initialStateSupplier  A function that computes the initial state. The computation is
+ * done lazily once an observer subscribes and it is done on the [io.reactivex.Scheduler] that
+ * you have specified in subscibeOn(). The computed initial state will be emitted directly
+ * in onSubscribe()
  * @param sideEffects The sideEffects. See [SideEffect]
  * @param reducer The reducer.  See [Reducer].
  * @param S The type of the State
  * @param A The type of the Actions
  */
-fun <S: Any, A: Any> Observable<A>.reduxStore(
-    initialState: S,
+fun <S : Any, A : Any> Observable<A>.reduxStore(
+    initialStateSupplier: () -> S,
     sideEffects: Iterable<SideEffect<S, A>>,
     reducer: Reducer<S, A>
 ): Observable<S> {
     return RxJavaPlugins.onAssembly(
         ObservableReduxStore(
-            initialState = initialState,
+            initialStateSupplier = initialStateSupplier,
             upstreamActionsObservable = this,
             reducer = reducer,
             sideEffects = sideEffects
@@ -44,17 +47,52 @@ fun <S: Any, A: Any> Observable<A>.reduxStore(
 }
 
 /**
+ * Just a convenience method to use a fixed value as initial state (rather than a supplier function).
+ * However, under the hood it creates a fixed supplier function that captures this fixed value.
+ *
+ * @see reduxStore
+ * @param initialState The initial state. The initial state is emitted directly in on onSubscribe().
+ * @param sideEffects The SideEffects. See [SideEffect].
+ * @param reducer The reducer. See [Reducer].
+ */
+fun <S : Any, A : Any> Observable<A>.reduxStore(
+    initialState: S,
+    sideEffects: Iterable<SideEffect<S, A>>,
+    reducer: Reducer<S, A>
+): Observable<S> = reduxStore(
+    initialStateSupplier = { initialState },
+    sideEffects = sideEffects,
+    reducer = reducer
+)
+
+/**
  * Just a convenience method to use varags for arbitarry many sideeffects instead a list of SideEffects.
  * See [reduxStore] documentation.
  *
  * @see reduxStore
  */
-fun <S: Any, A: Any> Observable<A>.reduxStore(
+fun <S : Any, A : Any> Observable<A>.reduxStore(
     initialState: S,
     vararg sideEffects: SideEffect<S, A>,
     reducer: Reducer<S, A>
 ): Observable<S> = reduxStore(
     initialState = initialState,
+    sideEffects = sideEffects.toList(),
+    reducer = reducer
+)
+
+/**
+ * Just a convenience method to use varags for arbitarry many sideeffects instead a list of SideEffects.
+ * See [reduxStore] documentation.
+ *
+ * @see reduxStore
+ */
+fun <S : Any, A : Any> Observable<A>.reduxStore(
+    initialStateSupplier: () -> S,
+    vararg sideEffects: SideEffect<S, A>,
+    reducer: Reducer<S, A>
+): Observable<S> = reduxStore(
+    initialStateSupplier = initialStateSupplier,
     sideEffects = sideEffects.toList(),
     reducer = reducer
 )
@@ -66,11 +104,12 @@ fun <S: Any, A: Any> Observable<A>.reduxStore(
  * @param A The type of the Actions
  * @see [Observable.reduxStore]
  */
-private class ObservableReduxStore<S: Any, A: Any>(
+private class ObservableReduxStore<S : Any, A : Any>(
     /**
-     * The initial state. This one will be emitted directly in onSubscribe()
+     * The initial state. This one will be emitted directly in onSubscribe().
+     * The supplier is runs on the Scheduler that has been specified in .subscribeOn(MyScheduler).
      */
-    private val initialState: S,
+    private val initialStateSupplier: () -> S,
     /**
      * The upstream that emits Actions (i.e. actions triggered by an User through User Interface)
      */
@@ -96,7 +135,7 @@ private class ObservableReduxStore<S: Any, A: Any>(
         val storeObserver = ReduxStoreObserver(
             actualObserver = serializedObserver,
             internalDisposables = disposables,
-            initialState = initialState,
+            initialState = initialStateSupplier(),
             reducer = reducer
         )
 
@@ -138,7 +177,7 @@ private class ObservableReduxStore<S: Any, A: Any>(
     /**
      * Simple observer for internal reduxStore
      */
-    private class ReduxStoreObserver<S: Any, A: Any>(
+    private class ReduxStoreObserver<S : Any, A : Any>(
         private val actualObserver: Observer<in S>,
         private val internalDisposables: CompositeDisposable,
         initialState: S,
