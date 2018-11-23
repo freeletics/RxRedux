@@ -197,7 +197,7 @@ This is a common pitfall and is most of the time caused by the fact that a `Side
 
 ```kotlin
 
-val sideEffect: SideEffect<Int, State> = { actions, state ->
+val sideEffect: SideEffect<State, Int> = { actions, state ->
     actions.map { it * 2 }
 }
 
@@ -227,12 +227,12 @@ For example let's assume upstream only emits exactly one Action (because then it
 // 1. upstream emits events
 val upstreamActions = Observable.just( SomeAction() )
 
-val sideEffect1: SideEffect<Action, State> = { actions, state ->
+val sideEffect1: SideEffect<State, Action> = { actions, state ->
     // 3. Runs because of SomeAction
     actions.filter { it is SomeAction }.map { OtherAction() }
 }
 
-val sideEffect2: SideEffect<Action, State> ={ actions, state ->
+val sideEffect2: SideEffect<State, Action> ={ actions, state ->
     // 5. Runs because of OtherAction
     actions.filter { it is OtherAction }.map { YetAnotherAction() }
 }
@@ -264,7 +264,7 @@ Absolutely. `SideEffect` is just a type alias for a function `(actions: Observab
 
 In kotlin you can use a lambda for that like this:
 ```kotlin
-val sideEffect1: SideEffect<Action, Action> = { actions, state ->
+val sideEffect1: SideEffect<State, Action> = { actions, state ->
     actions.filter { it is SomeAction }.map { OtherAction() }
 }
 ```
