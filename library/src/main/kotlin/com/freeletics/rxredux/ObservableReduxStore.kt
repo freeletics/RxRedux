@@ -24,7 +24,7 @@ import io.reactivex.subjects.Subject
  *
  * @param initialStateSupplier  A function that computes the initial state. The computation is
  * done lazily once an observer subscribes and it is done on the [io.reactivex.Scheduler] that
- * you have specified in subscibeOn(). The computed initial state will be emitted directly
+ * you have specified in subscribeOn(). The computed initial state will be emitted directly
  * in onSubscribe()
  * @param sideEffects The sideEffects. See [SideEffect]
  * @param reducer The reducer.  See [Reducer].
@@ -66,7 +66,7 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
 )
 
 /**
- * Just a convenience method to use varags for arbitarry many sideeffects instead a list of SideEffects.
+ * Just a convenience method to use vararg for arbitrary many sideeffects instead a list of SideEffects.
  * See [reduxStore] documentation.
  *
  * @see reduxStore
@@ -82,7 +82,7 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
 )
 
 /**
- * Just a convenience method to use varags for arbitarry many sideeffects instead a list of SideEffects.
+ * Just a convenience method to use vararg for arbitrary many sideeffects instead a list of SideEffects.
  * See [reduxStore] documentation.
  *
  * @see reduxStore
