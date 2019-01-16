@@ -69,7 +69,7 @@ Whenever a `SideEffect` needs to know the current State it can use `StateAccesso
 
 # Usage
 Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen.
-**For a complete example check [the sample application incl. README](https://github.com/freeletics/RxRedux/master/sample)**
+**For a complete example check [the sample application incl. README](sample/README.md)**
 but for the sake of simplicity let's stick with this simple "list of persons example":
 
 ``` kotlin
