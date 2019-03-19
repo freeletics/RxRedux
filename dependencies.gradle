@@ -12,7 +12,7 @@ ext.versions = [
         rxBinding              : '2.0.0',
         rxKotlin               : '2.3.0',
         rxRelay                : '2.1.0',
-        rxReplayingShare       : '2.0.1',
+        rxReplayingShare       : '2.1.1',
         okhttp                 : '3.11.0',
 
         retrofit               : '2.4.0',
