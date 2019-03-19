@@ -8,7 +8,7 @@ ext.versions = [
         dagger                 : '2.16',
         kotlin                 : '1.2.51',
         rxJava                 : '2.2.7',
-        rxAndroid              : '2.0.1',
+        rxAndroid              : '2.1.1',
         rxBinding              : '2.0.0',
         rxKotlin               : '2.1.0',
         rxRelay                : '2.1.0',
