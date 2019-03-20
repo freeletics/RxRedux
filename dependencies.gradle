@@ -21,7 +21,7 @@ ext.versions = [
         timber                 : '4.7.1',
 
         support                : '27.1.1',
-        supportConstraintLayout: '1.0.2',
+        supportConstraintLayout: '1.1.3',
 
         junit                  : '4.12',
         kotlinMockito          : '1.5.0',
