@@ -5,7 +5,7 @@ ext.versions = [
         targetSdk              : 28,
         minSdk                 : 21,
 
-        dagger                 : '2.16',
+        dagger                 : '2.21',
         kotlin                 : '1.2.51',
         rxJava                 : '2.2.7',
         rxAndroid              : '2.1.1',
