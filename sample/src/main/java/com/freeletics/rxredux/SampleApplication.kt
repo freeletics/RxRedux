@@ -4,12 +4,14 @@ import android.app.Application
 import android.view.ViewGroup
 import com.freeletics.rxredux.di.ApplicationModule
 import com.freeletics.rxredux.di.DaggerApplicationComponent
+import com.freeletics.rxredux.logs.SampleLogger
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 open class SampleApplication : Application() {
     init {
         Timber.plant(Timber.DebugTree())
+        ReduxLogger.default = SampleLogger()
     }
 
     val applicationComponent by lazy {
