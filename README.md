@@ -6,6 +6,7 @@ that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJav
 
 
 [![CircleCI](https://circleci.com/gh/Freeletics/RxRedux.svg?style=svg)](https://circleci.com/gh/Freeletics/RxRedux)
+[![Download](https://maven-badges.herokuapp.com/maven-central/com.freeletics.rxredux/rxredux/badge.svg) ](https://maven-badges.herokuapp.com/maven-central/com.freeletics.rxredux/rxredux)
 
 ## Dependency
 Dependencies are hosted on Maven Central:
