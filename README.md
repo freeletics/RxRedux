@@ -4,7 +4,8 @@ that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJav
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/rxredux.png)
 
-[![Build Status](https://travis-ci.org/freeletics/RxRedux.svg?branch=master)](https://travis-ci.org/freeletics/RxRedux)
+
+[![CircleCI](https://circleci.com/gh/Freeletics/RxRedux.svg?style=svg)](https://circleci.com/gh/Freeletics/RxRedux)
 
 ## Dependency
 Dependencies are hosted on Maven Central:
