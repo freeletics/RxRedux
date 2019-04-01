@@ -58,6 +58,7 @@ workflows:
               only:
                 - master
       - gradle-publish/publish_artifacts:
+          executor: gradle-publish/circleci-android
           context: "android-maven-publish"
           requires:
             - build_and_test
