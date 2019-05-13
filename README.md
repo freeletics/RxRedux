@@ -41,6 +41,12 @@ implementation 'com.freeletics.rxredux:rxredux:1.0.2-SNAPSHOT'
 In contrast to any other Redux inspired library out there, this library is really backed on top of RxJava (Mobius just offers some extensions to use RxJava for async works). 
 This library offers a custom RxJava operator `.reduxStore( initialState, sideEffects, reducer )` and treats upstream events as `Actions`. 
 
+## Kotlin coroutine-based implementation
+
+If you are already using [Kotlin coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) or planning to use it in your project - 
+check [CoRedux](https://github.com/freeletics/coredux). This library implements Redux store, using same approach as RxRedux, 
+but uses [Kotlin coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) instead of RxJava.
+
 # Redux Store
 A Store is basically an observable container for state. 
 This library provides a kotlin extension function `.reduxStore<State, Action>(initialState, sideEffects, reducer)` to create such a state container.
