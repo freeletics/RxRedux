@@ -2,22 +2,18 @@
 apply from: 'dependencies.gradle'
 
 buildscript {
-    ext.kotlin_version = '1.2.71'
+    apply from: 'dependencies.gradle'
     repositories {
         google()
         mavenCentral()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        //classpath 'com.facebook.testing.screenshot:plugin:0.7.0'
-        classpath 'com.karumi:shot:2.0.0'
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.6.0'
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath gradlePlugins.android
+        classpath gradlePlugins.kotlin
+        classpath gradlePlugins.karumi
+        classpath gradlePlugins.mavenPublish
+        classpath gradlePlugins.dokka
     }
 }
 

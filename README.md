@@ -1,10 +1,12 @@
 # RxRedux
+
+[![CircleCI](https://circleci.com/gh/freeletics/RxRedux.svg?style=svg)](https://circleci.com/gh/freeletics/RxRedux)
+[![Download](https://maven-badges.herokuapp.com/maven-central/com.freeletics.rxredux/rxredux/badge.svg) ](https://maven-badges.herokuapp.com/maven-central/com.freeletics.rxredux/rxredux)
+
 A Redux store implementation entirely based on RxJava (inspired by [redux-observable](https://redux-observable.js.org)) 
 that helps to isolate side effects. RxRedux is (kind of) a replacement for RxJava's `.scan()` operator. 
 
 ![RxRedux In a Nutshell](https://raw.githubusercontent.com/freeletics/RxRedux/master/docs/rxredux.png)
-
-[![Build Status](https://travis-ci.org/freeletics/RxRedux.svg?branch=master)](https://travis-ci.org/freeletics/RxRedux)
 
 ## Dependency
 Dependencies are hosted on Maven Central:
@@ -75,7 +77,7 @@ Whenever a `SideEffect` needs to know the current State it can use `StateAccesso
 
 # Usage
 Let's create a simple Redux Store for Pagination: Goal is to display a list of `Persons` on screen.
-**For a complete example check [the sample application incl. README](https://github.com/freeletics/RxRedux/master/sample)**
+**For a complete example check [the sample application incl. README](sample/README.md)**
 but for the sake of simplicity let's stick with this simple "list of persons example":
 
 ``` kotlin
@@ -203,7 +205,7 @@ This is a common pitfall and is most of the time caused by the fact that a `Side
 
 ```kotlin
 
-val sideEffect: SideEffect<Int, State> = { actions, state ->
+val sideEffect: SideEffect<State, Int> = { actions, state ->
     actions.map { it * 2 }
 }
 
@@ -233,12 +235,12 @@ For example let's assume upstream only emits exactly one Action (because then it
 // 1. upstream emits events
 val upstreamActions = Observable.just( SomeAction() )
 
-val sideEffect1: SideEffect<Action, State> = { actions, state ->
+val sideEffect1: SideEffect<State, Action> = { actions, state ->
     // 3. Runs because of SomeAction
     actions.filter { it is SomeAction }.map { OtherAction() }
 }
 
-val sideEffect2: SideEffect<Action, State> ={ actions, state ->
+val sideEffect2: SideEffect<State, Action> ={ actions, state ->
     // 5. Runs because of OtherAction
     actions.filter { it is OtherAction }.map { YetAnotherAction() }
 }
@@ -270,7 +272,7 @@ Absolutely. `SideEffect` is just a type alias for a function `(actions: Observab
 
 In kotlin you can use a lambda for that like this:
 ```kotlin
-val sideEffect1: SideEffect<Action, Action> = { actions, state ->
+val sideEffect1: SideEffect<State, Action> = { actions, state ->
     actions.filter { it is SomeAction }.map { OtherAction() }
 }
 ```

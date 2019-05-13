@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-// apply plugin: 'com.facebook.testing.screenshot'
 apply plugin: 'shot'
 
 kapt {
@@ -11,17 +10,15 @@ kapt {
     }
 }
 
-
 shot {
     appId = 'com.freeletics.rxredux'
 }
-
 
 android {
     compileSdkVersion versions.compileSdk
     defaultConfig {
         applicationId "com.freeletics.rxredux"
-        targetSdkVersion 26
+        targetSdkVersion versions.targetSdk
         minSdkVersion versions.minSdk
         versionCode 1
         versionName "1.0"
@@ -34,6 +31,10 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 
     sourceSets {
         test {
@@ -81,27 +82,22 @@ dependencies {
     kapt libraries.daggerCompiler
     implementation project(':library')
     implementation testLibraries.okhttpTls
-    //implementation "org.bouncycastle:bcprov-jdk15on:1.50"
-    //implementation "org.bouncycastle:bcprov-ext-jdk15on:1.50"
-    // implementation "org.bouncycastle:bcpkix-jdk15on:1.50"
-  //  implementation "org.bouncycastle:bctls-jdk15on:1.60"
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation "android.arch.core:core-testing:1.1.1"
+    testImplementation testLibraries.junit
+    testImplementation testLibraries.androidArchTesting
     testImplementation testLibraries.mockWebServer
     testImplementation libraries.moshiKotlin
     testImplementation libraries.moshi
 
     kaptTest libraries.daggerCompiler
-    androidTestImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'tools.fastlane:screengrab:1.2.0'
-    androidTestImplementation 'com.github.VictorAlbertos:DeviceAnimationTestRule:0.0.2'
+    androidTestImplementation testLibraries.junit
+    androidTestImplementation testLibraries.testRunner
+    androidTestImplementation testLibraries.espresso
+    androidTestImplementation testLibraries.espressoContrib
+    androidTestImplementation testLibraries.testRules
+    androidTestImplementation testLibraries.screengrab
+    androidTestImplementation testLibraries.deviceAnimationsRule
     androidTestImplementation testLibraries.mockWebServer
     androidTestImplementation libraries.moshiKotlin
     androidTestImplementation libraries.moshi
-
 }

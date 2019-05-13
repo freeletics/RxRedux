@@ -1,7 +1,6 @@
 package com.freeletics.rxredux
 
 import io.reactivex.Observable
-import io.reactivex.ObservableSource
 
 
 /**
@@ -16,7 +15,7 @@ typealias SideEffect<S, A> = (actions: Observable<A>, state: StateAccessor<S>) -
 
 
 /**
- * The StateAccessor is basically just a deferred way to get a state of a  [ObservableReduxStore] at any given point in time.
+ * The StateAccessor is basically just a deferred way to get a state of a [ObservableReduxStore] at any given point in time.
  * So you have to call this method to get the state.
  */
 // TODO find better name

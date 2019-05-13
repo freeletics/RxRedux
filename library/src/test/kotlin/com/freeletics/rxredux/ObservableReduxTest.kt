@@ -5,6 +5,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import org.junit.Assert
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 
 class ObservableReduxTest {
 
@@ -129,7 +130,6 @@ class ObservableReduxTest {
             actions: Observable<String>,
             accessor: StateAccessor<String>
         ): Observable<String> = actions.flatMap {
-            println("Doing something with $it")
             Observable.empty<String>()
         }
 
@@ -158,12 +158,61 @@ class ObservableReduxTest {
         val testException = Exception("test")
 
         Observable
-                .just("Action1")
-                .reduxStore("Initial", sideEffects = emptyList()) { _, _ ->
-                    throw testException
-                }
-                .test()
-                .assertError(ReducerException::class.java)
-                .assertErrorMessage("Exception was thrown by reducer, state = 'Initial', action = 'Action1'")
+            .just("Action1")
+            .reduxStore("Initial", sideEffects = emptyList()) { _, _ ->
+                throw testException
+            }
+            .test()
+            .assertError(ReducerException::class.java)
+            .assertErrorMessage("Exception was thrown by reducer, state = 'Initial', action = 'Action1'")
+    }
+
+    @Test
+    fun `subscribing new observer calls initial state supplier on subscribeOn scheduler`() {
+        val ioSchedulerNamePrefix = "Thread[RxCachedThreadScheduler-"
+        val initialStateCount = AtomicInteger()
+        val initialStateSupplierCallingThread = Array<Thread?>(2) { null }
+        val initialState = "initial State"
+        val action1 = "Action 1"
+        val testThread = Thread.currentThread()
+
+        val observable: Observable<String> = Observable.fromCallable { action1 }
+            .observeOn(Schedulers.newThread())
+            .reduxStore(initialStateSupplier = {
+                val index = initialStateCount.getAndIncrement()
+                initialStateSupplierCallingThread[index] = Thread.currentThread()
+                initialState
+            },
+                sideEffects = emptyList(),
+                reducer = { _, action -> action }
+            ).subscribeOn(Schedulers.io())
+            .take(2)
+
+
+        val observer1 = observable.test()
+        val observer2 = observable.test()
+
+        observer1.awaitTerminalEvent()
+        observer2.awaitTerminalEvent()
+
+        observer1.assertValues(initialState, action1)
+        observer2.assertValues(initialState, action1)
+
+        observer1.assertNoErrors()
+        observer2.assertNoErrors()
+
+        Assert.assertEquals(2, initialStateCount.get())
+        Assert.assertNotSame(testThread, initialStateSupplierCallingThread[0])
+        Assert.assertNotSame(testThread, initialStateSupplierCallingThread[1])
+        Assert.assertTrue(
+            initialStateSupplierCallingThread[0]
+                .toString()
+                .startsWith(ioSchedulerNamePrefix)
+        )
+        Assert.assertTrue(
+            initialStateSupplierCallingThread[1]
+                .toString()
+                .startsWith(ioSchedulerNamePrefix)
+        )
     }
 }

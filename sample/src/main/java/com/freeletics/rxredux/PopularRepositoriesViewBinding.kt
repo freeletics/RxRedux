@@ -29,7 +29,7 @@ open class PopularRepositoriesViewBinding(protected val rootView: ViewGroup) {
 
     val endOfRecyclerViewReached = Observable.create<Unit> { emitter ->
         val listener = object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 val endReached = !recyclerView!!.canScrollVertically(1)
