@@ -17,7 +17,7 @@ ext.versions = [
         rxReplayingShare       : '2.1.1',
         okhttp                 : '3.14.2',
 
-        retrofit               : '2.5.0',
+        retrofit               : '2.6.0',
         moshi                  : '1.8.0',
         timber                 : '4.7.1',
 
