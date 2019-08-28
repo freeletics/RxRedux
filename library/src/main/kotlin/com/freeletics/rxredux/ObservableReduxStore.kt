@@ -31,9 +31,11 @@ import io.reactivex.subjects.Subject
  * @param S The type of the State
  * @param A The type of the Actions
  */
+@JvmOverloads
 fun <S : Any, A : Any> Observable<A>.reduxStore(
     initialStateSupplier: () -> S,
     sideEffects: Iterable<SideEffect<S, A>>,
+    logger: ReduxLogger<in S, in A>? = ReduxLogger.default,
     reducer: Reducer<S, A>
 ): Observable<S> {
     return RxJavaPlugins.onAssembly(
@@ -41,7 +43,8 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
             initialStateSupplier = initialStateSupplier,
             upstreamActionsObservable = this,
             reducer = reducer,
-            sideEffects = sideEffects
+            sideEffects = sideEffects,
+            logger = logger
         )
     )
 }
@@ -55,14 +58,17 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
  * @param sideEffects The SideEffects. See [SideEffect].
  * @param reducer The reducer. See [Reducer].
  */
+@JvmOverloads
 fun <S : Any, A : Any> Observable<A>.reduxStore(
     initialState: S,
     sideEffects: Iterable<SideEffect<S, A>>,
+    logger: ReduxLogger<in S, in A>? = ReduxLogger.default,
     reducer: Reducer<S, A>
 ): Observable<S> = reduxStore(
     initialStateSupplier = { initialState },
     sideEffects = sideEffects,
-    reducer = reducer
+    reducer = reducer,
+    logger = logger
 )
 
 /**
@@ -71,14 +77,17 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
  *
  * @see reduxStore
  */
+@JvmOverloads
 fun <S : Any, A : Any> Observable<A>.reduxStore(
     initialState: S,
     vararg sideEffects: SideEffect<S, A>,
+    logger: ReduxLogger<in S, in A>? = ReduxLogger.default,
     reducer: Reducer<S, A>
 ): Observable<S> = reduxStore(
     initialState = initialState,
     sideEffects = sideEffects.toList(),
-    reducer = reducer
+    reducer = reducer,
+    logger = logger
 )
 
 /**
@@ -87,14 +96,17 @@ fun <S : Any, A : Any> Observable<A>.reduxStore(
  *
  * @see reduxStore
  */
+@JvmOverloads
 fun <S : Any, A : Any> Observable<A>.reduxStore(
     initialStateSupplier: () -> S,
     vararg sideEffects: SideEffect<S, A>,
+    logger: ReduxLogger<in S, in A>? = ReduxLogger.default,
     reducer: Reducer<S, A>
 ): Observable<S> = reduxStore(
     initialStateSupplier = initialStateSupplier,
     sideEffects = sideEffects.toList(),
-    reducer = reducer
+    reducer = reducer,
+    logger = logger
 )
 
 /**
@@ -124,7 +136,9 @@ private class ObservableReduxStore<S : Any, A : Any>(
     /**
      * The Reducer. Takes the current state and an action and computes a new state.
      */
-    private val reducer: Reducer<S, A>
+    private val reducer: Reducer<S, A>,
+
+    private val logger: ReduxLogger<in S, in A>?
 ) : Observable<S>() {
 
     override fun subscribeActual(observer: Observer<in S>) {
@@ -136,14 +150,17 @@ private class ObservableReduxStore<S : Any, A : Any>(
             actualObserver = serializedObserver,
             internalDisposables = disposables,
             initialState = initialStateSupplier(),
-            reducer = reducer
+            reducer = reducer,
+            logger = logger
         )
 
         // Stream to cancel the subscriptions
         val actionsSubject = PublishSubject.create<A>()
 
 
-        actionsSubject.subscribe(storeObserver) // This will make the reducer run on each action
+        actionsSubject
+            .doOnNext { logger?.onActionReceived(it, storeObserver.currentState()) }
+            .subscribe(storeObserver) // This will make the reducer run on each action
 
         // TODO should SideEffects be composed with ObservableTransformer?
         // That would be the more idiomatic way I guess.
@@ -158,6 +175,7 @@ private class ObservableReduxStore<S : Any, A : Any>(
                     // passed in as parameter similar to what Observable.timer() does.
 
                 }, { error ->
+                    logger?.onSideEffectError(storeObserver.currentState(), error)
                     actionsSubject.onError(error) // Error in SideEffect causes whole stream to fail
                 }, {
                     // Swallow onComplete because just if one SideEffect reaches onComplete we don't want to make
@@ -181,7 +199,8 @@ private class ObservableReduxStore<S : Any, A : Any>(
         private val actualObserver: Observer<in S>,
         private val internalDisposables: CompositeDisposable,
         initialState: S,
-        private val reducer: Reducer<S, A>
+        private val reducer: Reducer<S, A>,
+        private val logger: ReduxLogger<in S, in A>?
     ) : SimpleObserver<A>() {
 
         @Volatile
@@ -195,6 +214,7 @@ private class ObservableReduxStore<S : Any, A : Any>(
         override fun onSubscribeActually(d: Disposable) {
             // start with the initial state
             actualObserver.onSubscribe(d)
+            logger?.onStateInitialize(currentState())
             actualObserver.onNext(currentState())
 
             // TODO do we need to add Disposable d to internal Disposables?
@@ -207,9 +227,11 @@ private class ObservableReduxStore<S : Any, A : Any>(
             val newState = try {
                 reducer(currentState, t)
             } catch (error: Throwable) {
+                logger?.onReduceError(state = state, action = t, error = error)
                 onError(ReducerException(state = currentState, action = t, cause = error))
                 return
             }
+            logger?.onStateUpdate(state, newState, t)
             state = newState
             actualObserver.onNext(newState)
         }
