@@ -3,12 +3,12 @@ package com.freeletics.rxredux
 
 import java.util.concurrent.atomic.AtomicReference
 
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
-import io.reactivex.exceptions.*
-import io.reactivex.internal.disposables.DisposableHelper
-import io.reactivex.observers.LambdaConsumerIntrospection
-import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.exceptions.*
+import io.reactivex.rxjava3.internal.disposables.DisposableHelper
+import io.reactivex.rxjava3.observers.LambdaConsumerIntrospection
+import io.reactivex.rxjava3.plugins.RxJavaPlugins
 
 internal abstract class SimpleObserver<T> : AtomicReference<Disposable>(), Observer<T>, Disposable, LambdaConsumerIntrospection {
 
