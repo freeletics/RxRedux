@@ -1,7 +1,7 @@
 package com.freeletics.rxredux
 
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert
 import timber.log.Timber

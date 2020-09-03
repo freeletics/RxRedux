@@ -2,9 +2,9 @@ package com.freeletics.rxredux
 
 import android.view.ViewGroup
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.ReplaySubject
 import timber.log.Timber
 
 

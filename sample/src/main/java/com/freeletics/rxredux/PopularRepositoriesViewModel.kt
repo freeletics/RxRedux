@@ -6,12 +6,11 @@ import android.arch.lifecycle.ViewModel
 import com.freeletics.rxredux.businesslogic.pagination.Action
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
 import com.freeletics.rxredux.di.AndroidScheduler
-import com.jakewharton.rxrelay2.PublishRelay
-import com.jakewharton.rxrelay2.Relay
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
+import com.jakewharton.rxrelay3.PublishRelay
+import com.jakewharton.rxrelay3.Relay
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.functions.Consumer
 import javax.inject.Inject
 
 class PopularRepositoriesViewModel @Inject constructor(

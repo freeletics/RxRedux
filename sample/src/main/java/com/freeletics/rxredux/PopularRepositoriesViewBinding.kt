@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.freeletics.rxredux.businesslogic.github.GithubRepository
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import com.jakewharton.rxbinding2.view.clicks
-import io.reactivex.Observable
+import com.jakewharton.rxbinding4.view.clicks
+import io.reactivex.rxjava3.core.Observable
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 

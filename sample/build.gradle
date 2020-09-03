@@ -58,6 +58,9 @@ android {
 }
 
 dependencies {
+    // Used to be able to build on JDK9+
+    compileOnly libraries.jdk9Deps
+
     implementation libraries.kotlinStdlib
     implementation supportLibraries.appCompat
     implementation supportLibraries.recyclerView
@@ -82,6 +85,9 @@ dependencies {
     kapt libraries.daggerCompiler
     implementation project(':library')
     implementation testLibraries.okhttpTls
+
+    // Used to be able to build on JDK9+
+    testCompileOnly libraries.jdk9Deps
 
     testImplementation testLibraries.junit
     testImplementation testLibraries.androidArchTesting

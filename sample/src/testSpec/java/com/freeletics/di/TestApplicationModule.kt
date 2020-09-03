@@ -2,7 +2,7 @@ package com.freeletics.di
 
 import com.freeletics.rxredux.ViewBindingInstantiatorMap
 import com.freeletics.rxredux.di.ApplicationModule
-import io.reactivex.Scheduler
+import io.reactivex.rxjava3.core.Scheduler
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 

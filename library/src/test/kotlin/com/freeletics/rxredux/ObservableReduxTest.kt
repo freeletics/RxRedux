@@ -1,8 +1,8 @@
 package com.freeletics.rxredux
 
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import org.junit.Assert
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -164,7 +164,6 @@ class ObservableReduxTest {
             }
             .test()
             .assertError(ReducerException::class.java)
-            .assertErrorMessage("Exception was thrown by reducer, state = 'Initial', action = 'Action1'")
     }
 
     @Test
@@ -192,8 +191,8 @@ class ObservableReduxTest {
         val observer1 = observable.test()
         val observer2 = observable.test()
 
-        observer1.awaitTerminalEvent()
-        observer2.awaitTerminalEvent()
+        observer1.await()
+        observer2.await()
 
         observer1.assertValues(initialState, action1)
         observer2.assertValues(initialState, action1)
