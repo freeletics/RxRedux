@@ -57,7 +57,7 @@ fun loadNextPageSideEffect(actions : Observable<Action>, state : StateAccessor) 
         .map { repositoryList ->
           PageLoadedAction(repositoryList, nextPage) // Action with the loaded items as "payload"
         }
-        .startWith( StartLoadingNextPageAction )
+        .startWithItem(StartLoadingNextPageAction)
         .onErrorReturn { error -> ErrorLoadingPageAction(error) }
     }
 ```
@@ -88,7 +88,7 @@ fun showAndHideErrorSnackbarSideEffect(actions : Observable<Action>, state : Sta
     .switchMap { action ->
         Observable.timer(3, TimeUnit.SECONDS)
           .map { HideLoadNextPageErrorAction(action.error) }
-          .startWith( ShowLoadNextPageErrorAction(action.error) )
+          .startWithItem(ShowLoadNextPageErrorAction(action.error))
     }
 ```
 
