@@ -32,6 +32,8 @@ ext.versions = [
         espresso               : '3.0.2',
         screengrab             : '1.2.0',
         deviceAnimationsRule   : '0.0.2',
+
+        jdk9Deps               : '1.0',
 ]
 
 ext.libraries = [
@@ -54,7 +56,8 @@ ext.libraries = [
         retrofit              : "com.squareup.retrofit2:retrofit:$versions.retrofit",
         retrofitMoshi         : "com.squareup.retrofit2:converter-moshi:$versions.retrofit",
         retrofitRxJava        : "com.squareup.retrofit2:adapter-rxjava3:$versions.retrofit",
-        okhttp                : "com.squareup.okhttp3:okhttp:$versions.okhttp"
+        okhttp                : "com.squareup.okhttp3:okhttp:$versions.okhttp",
+        jdk9Deps              : "com.github.pengrad:jdk9-deps:$versions.jdk9Deps"
 ]
 
 ext.supportLibraries = [
