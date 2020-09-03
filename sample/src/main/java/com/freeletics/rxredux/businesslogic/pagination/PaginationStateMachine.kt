@@ -5,10 +5,12 @@ import com.freeletics.rxredux.businesslogic.github.GithubApiFacade
 import com.freeletics.rxredux.businesslogic.github.GithubRepository
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine.State
 import com.freeletics.rxredux.reduxStore
-import com.jakewharton.rxrelay2.PublishRelay
-import com.jakewharton.rxrelay2.Relay
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
+import com.jakewharton.rxrelay3.PublishRelay
+import com.jakewharton.rxrelay3.Relay
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -207,7 +209,7 @@ class PaginationStateMachine @Inject constructor(
             }
             .delay(1, TimeUnit.SECONDS) // Add some delay to make the loading indicator appear,
             .onErrorReturn { error -> ErrorLoadingPageAction(error, nextPage) }
-            .startWith(StartLoadingNextPage(nextPage))
+            .startWithItem(StartLoadingNextPage(nextPage))
     }
 
     /**
@@ -249,7 +251,7 @@ class PaginationStateMachine @Inject constructor(
             .switchMap { action ->
                 Observable.timer(3, TimeUnit.SECONDS)
                     .map<Action> { HideLoadNextPageErrorAction(action.error, action.page) }
-                    .startWith(ShowLoadNextPageErrorAction(action.error, action.page))
+                    .startWithItem(ShowLoadNextPageErrorAction(action.error, action.page))
             }
 
 

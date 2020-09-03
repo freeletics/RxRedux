@@ -3,7 +3,7 @@ package com.freeletics.rxredux
 import android.view.ViewGroup
 import com.freeletics.di.TestApplicationModule
 import com.freeletics.rxredux.di.DaggerApplicationComponent
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
 class SampleTestApplication : SampleApplication() {
 

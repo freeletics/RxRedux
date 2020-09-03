@@ -5,10 +5,10 @@ import com.freeletics.rxredux.ViewBindingInstantiatorMap
 import com.freeletics.rxredux.businesslogic.github.GithubApi
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Scheduler
+import io.reactivex.rxjava3.core.Scheduler
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
@@ -31,7 +31,7 @@ open class ApplicationModule(
             Retrofit.Builder()
                 .client(okHttp)
                 .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .baseUrl(baseUrl)
                 .build()
 

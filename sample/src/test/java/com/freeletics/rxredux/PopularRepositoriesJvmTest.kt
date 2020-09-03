@@ -4,10 +4,10 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import com.freeletics.di.TestApplicationModule
 import com.freeletics.rxredux.businesslogic.pagination.Action
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
-import io.reactivex.subjects.Subject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.ReplaySubject
+import io.reactivex.rxjava3.subjects.Subject
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import org.junit.Test

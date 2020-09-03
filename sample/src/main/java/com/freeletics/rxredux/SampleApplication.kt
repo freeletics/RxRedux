@@ -4,7 +4,7 @@ import android.app.Application
 import android.view.ViewGroup
 import com.freeletics.rxredux.di.ApplicationModule
 import com.freeletics.rxredux.di.DaggerApplicationComponent
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 open class SampleApplication : Application() {

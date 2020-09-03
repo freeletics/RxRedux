@@ -15,7 +15,7 @@ import android.support.test.rule.GrantPermissionRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import io.victoralbertos.device_animation_test_rule.DeviceAnimationTestRule
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.ClassRule

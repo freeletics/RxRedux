@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import com.facebook.testing.screenshot.Screenshot
 import com.freeletics.rxredux.businesslogic.pagination.PaginationStateMachine
-import io.reactivex.subjects.Subject
+import io.reactivex.rxjava3.subjects.Subject
 import timber.log.Timber
 import tools.fastlane.screengrab.Screengrab
 import java.util.*
