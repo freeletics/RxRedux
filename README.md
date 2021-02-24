@@ -155,8 +155,8 @@ actions
 
 The [following video](https://youtu.be/M7lx9Y9ANYo) (click on it) illustrates the workflow:
 
-[![RxRedux explanation](https://i.ytimg.com/vi/M7lx9Y9ANYo/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAqwunKP2_qGE0HYUlquWkFccM5MA)](https://youtu.be/M7lx9Y9ANYo)
-
+ <a href="https://youtu.be/M7lx9Y9ANYo"> <img src="./docs/workflow.gif" width = "400" height = "230" /> </a>
+ 
 
 0. Let's take a look at the following illustration:
 The blue box is the `View` (think UI). 
