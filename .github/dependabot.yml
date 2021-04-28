@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "02:00"
+    timezone: Europe/Berlin
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.jetbrains.dokka:dokka-gradle-plugin
+    versions:
+    - 1.4.20
+    - 1.4.20-dev-65
+    - 1.4.30
+  - dependency-name: com.karumi:shot
+    versions:
+    - 5.10.0
+    - 5.10.3
+    - 5.5.1
+    - 5.7.0
+    - 5.8.0
+  - dependency-name: com.android.tools.build:gradle
+    versions:
+    - 4.1.2
+  - dependency-name: io.reactivex.rxjava2:rxjava
+    versions:
+    - 2.2.20
