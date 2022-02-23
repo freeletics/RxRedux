@@ -1,3 +1,7 @@
+# Deprecated
+
+We've stopped maintaining this library because we are moving from RxJava to Kotlin Coroutines and `Flow`. Take a look at [FlowRedux](https://github.com/freeletics/FlowRedux) for a spiritual successor to this library.
+
 # RxRedux
 
 [![CircleCI](https://circleci.com/gh/freeletics/RxRedux.svg?style=svg)](https://circleci.com/gh/freeletics/RxRedux)
